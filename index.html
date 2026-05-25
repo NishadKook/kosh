@@ -7,960 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
-<style>
-  /* ============================================================
-     DESIGN TOKENS
-  ============================================================ */
-  :root {
-    --bg-base: #08090f;
-    --bg-deep: #0b0d17;
-    --bg-rail: #0d0f1c;
-    --bg-elev: #131628;
-    --bg-card: #181c34;
-    --bg-card-hi: #1d2240;
-    --bg-glass: rgba(20, 23, 45, 0.62);
-
-    --line-soft: rgba(255, 255, 255, 0.05);
-    --line-med:  rgba(255, 255, 255, 0.09);
-    --line-warm: rgba(255, 255, 255, 0.16);
-
-    --text-hi:  #f3f4fb;
-    --text-md:  #b5b9d1;
-    --text-lo:  #6e7395;
-    --text-dim: #4a4f6d;
-
-    --violet:   #8b6cff;
-    --violet-2: #6c4ee2;
-    --indigo:   #5b6cff;
-    --cyan:     #4fd9ff;
-    --teal:     #2bdca8;
-    --mint:     #3ce3b3;
-    --amber:    #ffb163;
-    --coral:    #ff7e6b;
-    --rose:     #ff5d8f;
-    --gold:     #ffd166;
-
-    --shadow-card: 0 1px 0 rgba(255,255,255,0.04) inset,
-                   0 24px 60px -28px rgba(0,0,0,0.7),
-                   0 6px 18px -8px rgba(0,0,0,0.5);
-    --shadow-glow-violet: 0 0 0 1px rgba(139,108,255,0.18),
-                          0 18px 60px -12px rgba(139,108,255,0.35),
-                          0 0 80px -10px rgba(139,108,255,0.25);
-    --shadow-glow-cyan:   0 0 0 1px rgba(79,217,255,0.22),
-                          0 18px 60px -12px rgba(79,217,255,0.35),
-                          0 0 80px -10px rgba(79,217,255,0.25);
-
-    --r-xs: 6px;
-    --r-sm: 10px;
-    --r-md: 14px;
-    --r-lg: 18px;
-    --r-xl: 24px;
-  }
-
-  /* ============================================================
-     RESET + GLOBALS
-  ============================================================ */
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html, body {
-    height: 100%;
-    background: var(--bg-base);
-    color: var(--text-hi);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-feature-settings: 'cv11', 'ss01', 'ss03';
-    -webkit-font-smoothing: antialiased;
-    overflow: hidden;
-  }
-
-  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
-  ::selection { background: rgba(139,108,255,0.35); color: white; }
-
-  .serif { font-family: 'Instrument Serif', 'Times New Roman', serif; font-style: italic; letter-spacing: -0.02em; }
-  .mono  { font-family: 'JetBrains Mono', ui-monospace, monospace; }
-
-  /* ============================================================
-     APP SHELL — grid layout
-  ============================================================ */
-  .app {
-    height: 100vh;
-    display: grid;
-    grid-template-columns: 240px 1fr 360px;
-    grid-template-rows: 64px 1fr;
-    grid-template-areas:
-      "rail topbar topbar"
-      "rail canvas  inspector";
-    background:
-      radial-gradient(800px 600px at 18% 12%, rgba(91,108,255,0.10), transparent 60%),
-      radial-gradient(900px 700px at 92% 88%, rgba(79,217,255,0.06), transparent 60%),
-      radial-gradient(600px 500px at 70% 25%, rgba(255,93,143,0.04), transparent 65%),
-      var(--bg-base);
-  }
-
-  /* ============================================================
-     TOP BAR
-  ============================================================ */
-  .topbar {
-    grid-area: topbar;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    padding: 0 22px 0 18px;
-    border-bottom: 1px solid var(--line-soft);
-    background: linear-gradient(180deg, rgba(13,15,28,0.85), rgba(13,15,28,0.55));
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    position: relative;
-    z-index: 5;
-  }
-  .breadcrumbs {
-    display: flex; align-items: center; gap: 10px;
-    color: var(--text-md);
-    font-size: 13.5px;
-  }
-  .breadcrumbs .crumb {
-    padding: 5px 10px;
-    border-radius: var(--r-sm);
-    transition: background 160ms ease, color 160ms ease;
-    cursor: pointer;
-  }
-  .breadcrumbs .crumb:hover { background: var(--line-soft); color: var(--text-hi); }
-  .breadcrumbs .crumb.current {
-    color: var(--text-hi);
-    background: linear-gradient(180deg, rgba(139,108,255,0.16), rgba(91,108,255,0.10));
-    border: 1px solid rgba(139,108,255,0.25);
-  }
-  .breadcrumbs .sep { color: var(--text-dim); font-weight: 300; }
-
-  .topbar-spacer { flex: 1; }
-
-  .search {
-    width: 280px; height: 36px;
-    display: flex; align-items: center; gap: 9px;
-    padding: 0 12px;
-    border: 1px solid var(--line-soft);
-    background: rgba(8,9,15,0.4);
-    border-radius: var(--r-md);
-    color: var(--text-lo);
-    font-size: 13px;
-  }
-  .search:hover { border-color: var(--line-med); }
-  .search svg { width: 14px; height: 14px; opacity: 0.7; }
-  .kbd {
-    margin-left: auto;
-    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
-    padding: 2px 6px; border-radius: 4px;
-    background: rgba(255,255,255,0.05);
-    color: var(--text-lo);
-    border: 1px solid var(--line-soft);
-  }
-
-  .team-stack { display: flex; align-items: center; }
-  .team-stack .avt { margin-left: -7px; }
-  .team-stack .avt:first-child { margin-left: 0; }
-  .avt {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10.5px; font-weight: 600; color: white;
-    border: 2px solid var(--bg-deep);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.35);
-  }
-  .avt.more {
-    background: var(--bg-card-hi);
-    color: var(--text-md);
-    font-size: 10px;
-    font-weight: 500;
-  }
-
-  .icon-btn {
-    width: 34px; height: 34px;
-    border-radius: var(--r-sm);
-    display: inline-flex; align-items: center; justify-content: center;
-    color: var(--text-md);
-    border: 1px solid transparent;
-    transition: all 160ms ease;
-  }
-  .icon-btn:hover { background: var(--line-soft); color: var(--text-hi); border-color: var(--line-med); }
-  .icon-btn svg { width: 16px; height: 16px; }
-
-  .me-pill {
-    display: flex; align-items: center; gap: 10px;
-    padding: 4px 12px 4px 4px;
-    border-radius: 999px;
-    background: var(--bg-elev);
-    border: 1px solid var(--line-soft);
-    cursor: pointer;
-  }
-  .me-pill .avt { width: 26px; height: 26px; border: 0; }
-  .me-pill .who { font-size: 12.5px; color: var(--text-md); }
-
-  /* ============================================================
-     LEFT RAIL
-  ============================================================ */
-  .rail {
-    grid-area: rail;
-    background: linear-gradient(180deg, var(--bg-rail), #0a0c17);
-    border-right: 1px solid var(--line-soft);
-    display: flex; flex-direction: column;
-    overflow: hidden;
-  }
-  .brand {
-    height: 64px;
-    display: flex; align-items: center; gap: 10px;
-    padding: 0 20px;
-    border-bottom: 1px solid var(--line-soft);
-  }
-  .brand-mark {
-    width: 28px; height: 28px;
-    border-radius: 9px;
-    background:
-      radial-gradient(circle at 30% 25%, #d3c5ff, transparent 55%),
-      conic-gradient(from 220deg at 60% 60%, #5b6cff, #8b6cff, #4fd9ff, #5b6cff);
-    box-shadow: 0 6px 18px -4px rgba(139,108,255,0.55), inset 0 0 0 1px rgba(255,255,255,0.18);
-  }
-  .brand-name {
-    font-family: 'Instrument Serif', serif; font-style: italic;
-    font-size: 22px; letter-spacing: -0.01em;
-    color: var(--text-hi);
-  }
-  .brand-name .dot { color: var(--violet); font-style: normal; }
-
-  .rail-section {
-    padding: 16px 12px 4px 12px;
-  }
-  .rail-label {
-    padding: 6px 10px;
-    font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--text-dim); font-weight: 600;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .rail-label .add {
-    width: 18px; height: 18px;
-    border-radius: 5px;
-    display: inline-flex; align-items: center; justify-content: center;
-    color: var(--text-lo);
-  }
-  .rail-label .add:hover { background: var(--line-soft); color: var(--text-hi); }
-
-  .rail-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 10px;
-    margin: 1px 0;
-    border-radius: var(--r-sm);
-    color: var(--text-md);
-    font-size: 13px;
-    cursor: pointer;
-    transition: background 140ms ease, color 140ms ease;
-  }
-  .rail-item:hover { background: var(--line-soft); color: var(--text-hi); }
-  .rail-item.active {
-    background: linear-gradient(180deg, rgba(139,108,255,0.14), rgba(91,108,255,0.08));
-    color: var(--text-hi);
-    box-shadow: inset 0 0 0 1px rgba(139,108,255,0.25);
-  }
-  .rail-item .swatch {
-    width: 9px; height: 9px; border-radius: 3px;
-    background: var(--violet);
-    box-shadow: 0 0 0 3px rgba(139,108,255,0.15);
-  }
-  .rail-item .swatch.cyan { background: var(--cyan); box-shadow: 0 0 0 3px rgba(79,217,255,0.15); }
-  .rail-item .swatch.coral { background: var(--coral); box-shadow: 0 0 0 3px rgba(255,126,107,0.15); }
-  .rail-item .swatch.mint { background: var(--mint); box-shadow: 0 0 0 3px rgba(60,227,179,0.15); }
-  .rail-item .count {
-    margin-left: auto;
-    font-size: 11px; color: var(--text-dim);
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .rail-divider { height: 1px; background: var(--line-soft); margin: 12px 14px; }
-
-  .rail-foot {
-    margin-top: auto;
-    padding: 14px;
-    border-top: 1px solid var(--line-soft);
-  }
-  .me-card {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 12px;
-    border-radius: var(--r-md);
-    background: var(--bg-elev);
-    border: 1px solid var(--line-soft);
-  }
-  .me-card .avt { width: 32px; height: 32px; }
-  .me-card .info { display: flex; flex-direction: column; min-width: 0; }
-  .me-card .info b { font-size: 13px; font-weight: 600; color: var(--text-hi); }
-  .me-card .info span { font-size: 11px; color: var(--text-lo); }
-
-  /* ============================================================
-     CANVAS AREA
-  ============================================================ */
-  .canvas-area {
-    grid-area: canvas;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-  .canvas-stages-wrap {
-    position: relative;
-    flex: 1;
-    overflow: hidden;
-    background:
-      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.045) 1px, transparent 0);
-    background-size: 28px 28px;
-    background-position: 14px 14px;
-  }
-
-  /* ============================================================
-     PROJECT PULSE STRIP — progression bar
-  ============================================================ */
-  .project-pulse-strip {
-    height: 58px;
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    padding: 0 22px;
-    border-bottom: 1px solid var(--line-soft);
-    background: linear-gradient(180deg, rgba(13,15,28,0.7), rgba(13,15,28,0.25));
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    position: relative;
-    z-index: 3;
-    overflow: hidden;
-  }
-  .project-pulse-strip::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(139,108,255,0.35), rgba(79,217,255,0.35), transparent);
-  }
-  .pulse-eye {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--text-dim); font-weight: 600;
-    flex-shrink: 0;
-  }
-  .pulse-eye .dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--mint);
-    box-shadow: 0 0 10px var(--mint);
-    animation: pulse 2s ease-in-out infinite;
-  }
-  .pulse-pct {
-    font-size: 30px; line-height: 1;
-    color: var(--text-hi);
-    letter-spacing: -0.02em;
-    flex-shrink: 0;
-  }
-  .pulse-pct .pct-sym {
-    font-size: 15px;
-    color: var(--text-md);
-    margin-left: 1px;
-  }
-  .pulse-bar-wrap {
-    flex: 1;
-    min-width: 110px;
-    max-width: 240px;
-  }
-  .pulse-bar-wrap .bar {
-    height: 6px;
-    border-radius: 3px;
-    background: rgba(255,255,255,0.06);
-    overflow: hidden;
-    position: relative;
-  }
-  .pulse-bar-wrap .bar .fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--violet), var(--cyan), var(--mint));
-    border-radius: 3px;
-    box-shadow: 0 0 16px rgba(139,108,255,0.5);
-  }
-  .pulse-chip {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 4px 9px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--line-soft);
-    font-size: 11.5px;
-    color: var(--text-md);
-    font-weight: 500;
-    flex-shrink: 0;
-  }
-  .pulse-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dim); }
-  .pulse-chip.done .dot    { background: var(--mint);  box-shadow: 0 0 6px var(--mint); }
-  .pulse-chip.doing .dot   { background: var(--cyan);  box-shadow: 0 0 6px var(--cyan); }
-  .pulse-chip.todo .dot    { background: var(--text-lo); }
-  .pulse-chip.blocked .dot { background: var(--coral); box-shadow: 0 0 6px var(--coral); }
-
-  .pulse-meta {
-    margin-left: auto;
-    display: inline-flex; align-items: center; gap: 9px;
-    font-size: 11.5px; color: var(--text-md);
-    padding: 5px 11px;
-    background: rgba(8,9,15,0.4);
-    border: 1px solid var(--line-soft);
-    border-radius: 999px;
-    flex-shrink: 0;
-  }
-  .pulse-meta svg { width: 12px; height: 12px; opacity: 0.7; }
-  .pulse-meta b { color: var(--text-hi); font-weight: 500; }
-  .pulse-meta .sep { color: var(--text-dim); }
-
-  /* ============================================================
-     TOPBAR "NEW TICKET" PRIMARY BUTTON
-  ============================================================ */
-  .btn-create {
-    display: inline-flex; align-items: center; gap: 8px;
-    height: 36px;
-    padding: 0 14px 0 12px;
-    border-radius: var(--r-md);
-    background: linear-gradient(180deg, var(--violet), var(--violet-2));
-    color: white;
-    font-size: 12.5px; font-weight: 500;
-    box-shadow:
-      0 8px 20px -6px rgba(139,108,255,0.55),
-      inset 0 0 0 1px rgba(255,255,255,0.14),
-      inset 0 -2px 0 rgba(0,0,0,0.18);
-    transition: all 160ms ease;
-    position: relative;
-  }
-  .btn-create:hover {
-    transform: translateY(-1px);
-    box-shadow:
-      0 12px 28px -6px rgba(139,108,255,0.7),
-      inset 0 0 0 1px rgba(255,255,255,0.18),
-      inset 0 -2px 0 rgba(0,0,0,0.18);
-  }
-  .btn-create svg { width: 14px; height: 14px; }
-  .btn-create .hint {
-    margin-left: 4px; padding-left: 9px;
-    border-left: 1px solid rgba(255,255,255,0.22);
-    font-size: 10.5px;
-    opacity: 0.82;
-    font-weight: 400;
-    letter-spacing: 0.02em;
-  }
-
-  .stage {
-    position: absolute; inset: 0;
-    transition: opacity 320ms ease;
-    overflow: hidden;
-  }
-  .stage.hidden { opacity: 0; pointer-events: none; }
-
-  .stage-inner {
-    position: absolute;
-    top: 24px; left: 36px;
-    width: 1180px; height: 760px;
-    transform-origin: top left;
-  }
-
-  .link-layer {
-    position: absolute;
-    inset: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    overflow: visible;
-  }
-
-  /* ============================================================
-     TICKET CARDS — base
-  ============================================================ */
-  .card {
-    position: absolute;
-    background: linear-gradient(180deg, var(--bg-card-hi), var(--bg-card));
-    border-radius: var(--r-md);
-    border: 1px solid var(--line-soft);
-    padding: 14px 16px;
-    color: var(--text-hi);
-    box-shadow: var(--shadow-card);
-    overflow: hidden;
-    transition: transform 240ms cubic-bezier(.2,.8,.2,1), box-shadow 240ms ease, border-color 240ms ease;
-  }
-  .card::before {
-    content: "";
-    position: absolute; top: 0; left: 0;
-    width: 3px; height: 100%;
-    background: var(--violet);
-    opacity: 0.85;
-  }
-  .card:hover { transform: translateY(-2px); border-color: var(--line-med); }
-
-  .card.work     { width: 240px; }
-  .card.work .meta-row { display: flex; align-items: center; justify-content: space-between; }
-
-  .id-pill {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; letter-spacing: 0.08em;
-    color: var(--text-lo);
-    padding: 2px 6px;
-    border-radius: 5px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--line-soft);
-  }
-  .type-pill {
-    font-size: 10px; font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 3px 7px;
-    border-radius: 5px;
-    background: rgba(91,108,255,0.13);
-    color: #b3befb;
-    border: 1px solid rgba(91,108,255,0.22);
-  }
-  .type-pill.sub {
-    background: linear-gradient(180deg, rgba(139,108,255,0.22), rgba(91,108,255,0.14));
-    color: #d4cbff;
-    border: 1px solid rgba(139,108,255,0.35);
-  }
-  .type-pill.cons {
-    background: rgba(255,177,99,0.12);
-    color: var(--amber);
-    border: 1px solid rgba(255,177,99,0.28);
-  }
-
-  .card h3 {
-    margin: 10px 0 10px 0;
-    font-size: 14.5px; font-weight: 600;
-    line-height: 1.32;
-    color: var(--text-hi);
-  }
-
-  .card .foot {
-    display: flex; align-items: center; gap: 10px;
-    margin-top: 8px;
-  }
-  .card .foot .avt { width: 22px; height: 22px; font-size: 9.5px; border-width: 2px; }
-  .card .who {
-    font-size: 12px; color: var(--text-md);
-  }
-  .card .when {
-    margin-left: auto;
-    font-size: 11px; color: var(--text-dim);
-  }
-
-  /* status accents on the left strip */
-  .card.done::before    { background: var(--mint); box-shadow: 0 0 14px rgba(60,227,179,0.55); }
-  .card.doing::before   { background: var(--cyan); box-shadow: 0 0 14px rgba(79,217,255,0.55); }
-  .card.todo::before    { background: var(--text-dim); }
-  .card.blocked::before { background: var(--coral); box-shadow: 0 0 14px rgba(255,126,107,0.55); }
-
-  .status-chip {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 11px; font-weight: 500;
-    padding: 2px 8px 2px 6px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--line-soft);
-    color: var(--text-md);
-  }
-  .status-chip .ring {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--text-lo);
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.06);
-  }
-  .status-chip.done .ring   { background: var(--mint);  box-shadow: 0 0 0 2px rgba(60,227,179,0.18); }
-  .status-chip.doing .ring  { background: var(--cyan);  box-shadow: 0 0 0 2px rgba(79,217,255,0.20); animation: pulse 1.8s ease-in-out infinite; }
-  .status-chip.blocked .ring{ background: var(--coral); box-shadow: 0 0 0 2px rgba(255,126,107,0.20); }
-  .status-chip.todo .ring   { background: var(--text-dim); }
-
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 2px rgba(79,217,255,0.20); }
-    50%      { box-shadow: 0 0 0 4px rgba(79,217,255,0.35); }
-  }
-
-  .card.selected {
-    border-color: rgba(139,108,255,0.45);
-    box-shadow:
-      0 0 0 1px rgba(139,108,255,0.3),
-      0 30px 70px -20px rgba(139,108,255,0.45),
-      0 0 80px -10px rgba(139,108,255,0.3);
-  }
-
-  /* Sub-project card — bigger, richer */
-  .card.subproject {
-    width: 300px;
-    background:
-      radial-gradient(120% 110% at 10% 0%, rgba(139,108,255,0.16), transparent 55%),
-      linear-gradient(180deg, #1d2046, #181c34);
-    border: 1px solid rgba(139,108,255,0.22);
-    box-shadow:
-      0 1px 0 rgba(255,255,255,0.05) inset,
-      0 24px 60px -28px rgba(0,0,0,0.7),
-      0 12px 50px -12px rgba(139,108,255,0.25);
-  }
-  .card.subproject::before { display: none; }
-  .card.subproject .portal-frame {
-    position: absolute; inset: 6px;
-    border-radius: 11px;
-    pointer-events: none;
-    border: 1px dashed rgba(139,108,255,0.18);
-  }
-  .card.subproject .team-line {
-    display: flex; align-items: center; gap: 8px;
-    margin-top: 6px;
-    padding: 8px 10px;
-    border-radius: 9px;
-    background: rgba(8,9,15,0.45);
-    border: 1px solid var(--line-soft);
-    font-size: 11.5px;
-    color: var(--text-md);
-  }
-  .card.subproject .team-line b { color: var(--text-hi); font-weight: 600; }
-  .card.subproject .progress {
-    margin-top: 10px;
-    display: flex; flex-direction: column; gap: 6px;
-  }
-  .progress-row {
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 11px; color: var(--text-lo);
-  }
-  .progress-row b { font-family: 'JetBrains Mono', monospace; color: var(--text-hi); font-weight: 500; }
-  .bar {
-    height: 5px; border-radius: 3px;
-    background: rgba(255,255,255,0.05);
-    overflow: hidden;
-  }
-  .bar .fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--violet), var(--cyan));
-    border-radius: 3px;
-    box-shadow: 0 0 14px rgba(139,108,255,0.5);
-  }
-  .drill-btn {
-    margin-top: 12px;
-    width: 100%;
-    padding: 9px 12px;
-    border-radius: 9px;
-    background: linear-gradient(180deg, rgba(139,108,255,0.18), rgba(91,108,255,0.10));
-    border: 1px solid rgba(139,108,255,0.32);
-    color: #ddd5ff;
-    font-size: 12px; font-weight: 500;
-    display: flex; align-items: center; justify-content: center; gap: 7px;
-    transition: all 160ms ease;
-  }
-  .drill-btn:hover {
-    background: linear-gradient(180deg, rgba(139,108,255,0.30), rgba(91,108,255,0.18));
-    color: white;
-    transform: translateY(-1px);
-  }
-  .drill-btn svg { width: 13px; height: 13px; }
-
-  /* Consolidation ticket — distinct */
-  .card.consolidation {
-    width: 280px;
-    background:
-      radial-gradient(120% 110% at 50% 0%, rgba(255,177,99,0.12), transparent 60%),
-      linear-gradient(180deg, #221d34, #1a162b);
-    border: 1px solid rgba(255,177,99,0.22);
-  }
-  .card.consolidation::before { display: none; }
-  .card.consolidation .merge-icon {
-    position: absolute; top: 12px; right: 14px;
-    width: 22px; height: 22px;
-    border-radius: 6px;
-    background: rgba(255,177,99,0.10);
-    border: 1px solid rgba(255,177,99,0.28);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--amber);
-  }
-  .card.consolidation .merge-icon svg { width: 12px; height: 12px; }
-
-  /* ============================================================
-     MINI-MAP
-  ============================================================ */
-  .minimap {
-    position: absolute; left: 16px; bottom: 16px;
-    width: 180px; height: 110px;
-    background: var(--bg-glass);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--line-soft);
-    border-radius: var(--r-md);
-    padding: 8px;
-    z-index: 4;
-  }
-  .minimap-label {
-    position: absolute; top: -22px; left: 4px;
-    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--text-dim);
-    font-weight: 600;
-  }
-  .minimap-canvas {
-    position: relative;
-    width: 100%; height: 100%;
-    background:
-      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0);
-    background-size: 8px 8px;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .mini-dot {
-    position: absolute;
-    width: 6px; height: 6px;
-    border-radius: 2px;
-    background: var(--violet);
-  }
-  .mini-dot.cyan { background: var(--cyan); }
-  .mini-dot.mint { background: var(--mint); }
-  .mini-dot.amber { background: var(--amber); }
-  .mini-viewport {
-    position: absolute;
-    border: 1px solid rgba(139,108,255,0.55);
-    background: rgba(139,108,255,0.10);
-    border-radius: 3px;
-  }
-
-  /* ============================================================
-     ZOOM / TOOL CONTROLS
-  ============================================================ */
-  .tool-cluster {
-    position: absolute; right: 16px; bottom: 16px;
-    display: flex; align-items: center; gap: 8px;
-    z-index: 4;
-  }
-  .tool-pill {
-    display: flex; align-items: center;
-    padding: 4px;
-    background: var(--bg-glass);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--line-soft);
-    border-radius: 11px;
-  }
-  .tool-pill button {
-    width: 32px; height: 32px;
-    border-radius: 7px;
-    color: var(--text-md);
-    display: inline-flex; align-items: center; justify-content: center;
-  }
-  .tool-pill button:hover { background: var(--line-soft); color: var(--text-hi); }
-  .tool-pill button.active {
-    background: linear-gradient(180deg, rgba(139,108,255,0.22), rgba(91,108,255,0.12));
-    color: white;
-    box-shadow: inset 0 0 0 1px rgba(139,108,255,0.35);
-  }
-  .tool-pill button svg { width: 15px; height: 15px; }
-  .zoom-readout {
-    min-width: 50px;
-    text-align: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--text-md);
-    padding: 0 6px;
-  }
-
-  /* ============================================================
-     AI FLOATING DOCK (v2 preview)
-  ============================================================ */
-  .ai-dock {
-    position: absolute; right: 16px; top: 16px;
-    display: flex; align-items: center; gap: 10px;
-    padding: 6px 14px 6px 6px;
-    background: var(--bg-glass);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(139,108,255,0.20);
-    border-radius: 999px;
-    box-shadow: 0 18px 50px -10px rgba(139,108,255,0.20);
-    z-index: 4;
-    cursor: pointer;
-    transition: transform 200ms ease, box-shadow 200ms ease;
-  }
-  .ai-dock:hover { transform: translateY(-1px); box-shadow: 0 24px 60px -12px rgba(139,108,255,0.35); }
-  .ai-orb {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 30% 30%, #fff, transparent 40%),
-      conic-gradient(from 45deg, #8b6cff, #4fd9ff, #ff5d8f, #8b6cff);
-    box-shadow: 0 0 22px rgba(139,108,255,0.55), inset 0 0 10px rgba(255,255,255,0.18);
-    animation: orbspin 14s linear infinite;
-  }
-  @keyframes orbspin { to { transform: rotate(360deg); } }
-  .ai-dock .label {
-    font-size: 12.5px; color: var(--text-hi);
-    display: flex; align-items: center; gap: 9px;
-  }
-  .v2-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9.5px; letter-spacing: 0.1em;
-    padding: 2px 7px;
-    border-radius: 999px;
-    background: linear-gradient(180deg, rgba(139,108,255,0.25), rgba(91,108,255,0.15));
-    color: #d2c9ff;
-    border: 1px solid rgba(139,108,255,0.35);
-  }
-
-  /* ============================================================
-     INSPECTOR (right panel)
-  ============================================================ */
-  .inspector {
-    grid-area: inspector;
-    background: linear-gradient(180deg, #0c0e1c, #0a0c18);
-    border-left: 1px solid var(--line-soft);
-    overflow: auto;
-    padding: 22px 22px 24px;
-  }
-  .inspector::-webkit-scrollbar { width: 8px; }
-  .inspector::-webkit-scrollbar-thumb { background: var(--line-med); border-radius: 4px; }
-
-  .ins-eyebrow {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 12px;
-    font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--text-dim); font-weight: 600;
-  }
-  .ins-eyebrow .ring { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
-
-  .ins-title {
-    font-family: 'Instrument Serif', serif; font-style: italic;
-    font-size: 30px; line-height: 1.1; letter-spacing: -0.015em;
-    color: var(--text-hi);
-    margin-bottom: 18px;
-  }
-
-  .ins-meta-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-    margin-bottom: 18px;
-  }
-  .ins-cell {
-    padding: 10px 12px;
-    border-radius: var(--r-sm);
-    background: var(--bg-elev);
-    border: 1px solid var(--line-soft);
-  }
-  .ins-cell .lbl {
-    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--text-dim); font-weight: 600;
-    margin-bottom: 6px;
-  }
-  .ins-cell .val {
-    font-size: 13px; color: var(--text-hi);
-    display: flex; align-items: center; gap: 7px;
-  }
-  .ins-cell .val .avt { width: 20px; height: 20px; font-size: 9px; border-width: 2px; }
-
-  .ins-section-label {
-    font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--text-dim); font-weight: 600;
-    margin: 18px 0 10px 0;
-  }
-
-  .ins-desc {
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: var(--text-md);
-  }
-  .ins-desc em { color: var(--text-hi); font-style: italic; font-family: 'Instrument Serif', serif; font-size: 15px; }
-
-  .ctx-pyramid {
-    margin-top: 8px;
-    padding: 14px;
-    border-radius: var(--r-md);
-    background: linear-gradient(180deg, rgba(91,108,255,0.06), rgba(8,9,15,0.4));
-    border: 1px solid var(--line-soft);
-    position: relative;
-    overflow: hidden;
-  }
-  .ctx-pyramid::after {
-    content: ""; position: absolute; inset: -1px;
-    background: linear-gradient(180deg, rgba(139,108,255,0.12), transparent 50%);
-    pointer-events: none;
-  }
-  .ctx-row {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 8px 0;
-    border-bottom: 1px dashed var(--line-soft);
-    position: relative; z-index: 1;
-  }
-  .ctx-row:last-child { border-bottom: 0; }
-  .ctx-tag {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em;
-    color: var(--text-dim);
-    min-width: 46px;
-    padding-top: 2px;
-  }
-  .ctx-line { font-size: 12.5px; color: var(--text-md); line-height: 1.4; }
-  .ctx-line b { color: var(--text-hi); font-weight: 600; }
-
-  .activity {
-    display: flex; flex-direction: column; gap: 10px;
-  }
-  .act-item {
-    display: flex; gap: 10px;
-    padding: 10px 12px;
-    background: var(--bg-elev);
-    border: 1px solid var(--line-soft);
-    border-radius: var(--r-sm);
-  }
-  .act-item .avt { width: 24px; height: 24px; font-size: 9px; border: 0; }
-  .act-body { flex: 1; }
-  .act-body .top { font-size: 12px; color: var(--text-hi); }
-  .act-body .top b { font-weight: 600; }
-  .act-body .top .when { color: var(--text-dim); font-weight: 400; margin-left: 6px; }
-  .act-body .body { font-size: 12px; color: var(--text-md); margin-top: 4px; line-height: 1.45; }
-
-  .action-row {
-    display: flex; gap: 8px;
-    margin-top: 18px;
-  }
-  .btn {
-    flex: 1;
-    height: 36px;
-    border-radius: var(--r-sm);
-    font-size: 12.5px; font-weight: 500;
-    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-    border: 1px solid var(--line-soft);
-    background: var(--bg-elev);
-    color: var(--text-hi);
-    transition: all 160ms ease;
-  }
-  .btn:hover { background: var(--bg-card-hi); border-color: var(--line-med); }
-  .btn.primary {
-    background: linear-gradient(180deg, var(--violet), var(--violet-2));
-    border-color: transparent;
-    color: white;
-    box-shadow: 0 8px 24px -6px rgba(139,108,255,0.55);
-  }
-  .btn.primary:hover { transform: translateY(-1px); box-shadow: 0 12px 30px -8px rgba(139,108,255,0.7); }
-  .btn svg { width: 14px; height: 14px; }
-
-  /* ============================================================
-     CONCEPT TAG (corner watermark)
-  ============================================================ */
-  .concept-tag {
-    position: fixed;
-    left: 252px;
-    bottom: 14px;
-    z-index: 6;
-    display: flex; align-items: center; gap: 8px;
-    padding: 5px 11px 5px 9px;
-    background: var(--bg-glass);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--line-soft);
-    border-radius: 999px;
-    font-size: 10.5px;
-    color: var(--text-lo);
-    letter-spacing: 0.06em;
-    pointer-events: none;
-  }
-  .concept-tag .live {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--mint);
-    box-shadow: 0 0 8px var(--mint);
-    animation: pulse 2s ease-in-out infinite;
-  }
-  .concept-tag .v {
-    font-family: 'Instrument Serif', serif; font-style: italic;
-    color: var(--text-hi);
-    font-size: 12px;
-  }
-
-  /* utility */
-  .hidden { display: none !important; }
-</style>
+<link rel="stylesheet" href="styles/styles.css" />
 </head>
 
 <body>
@@ -1072,21 +119,13 @@
       <span class="kbd">⌘K</span>
     </div>
 
-    <button class="btn-create" title="Anyone on this project can create a ticket">
+    <button id="btnCreateTicket" class="btn-create" title="Anyone on this project can create a ticket">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
       New ticket
       <span class="hint">open to all members</span>
     </button>
 
-    <div class="team-stack" title="Project members">
-      <div class="avt" style="background:linear-gradient(135deg,#8b6cff,#4fd9ff);">AK</div>
-      <div class="avt" style="background:linear-gradient(135deg,#3ce3b3,#2bdca8);">PS</div>
-      <div class="avt" style="background:linear-gradient(135deg,#ffb163,#ff7e6b);">AR</div>
-      <div class="avt" style="background:linear-gradient(135deg,#5b6cff,#8b6cff);">RG</div>
-      <div class="avt" style="background:linear-gradient(135deg,#ff5d8f,#ffb163);">PM</div>
-      <div class="avt more">+4</div>
-    </div>
-
+    <!-- contributors moved to canvas filters (top-right). removed from topbar -->
     <button class="icon-btn" title="Filter">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h18l-7 9v6l-4-2v-4z"/></svg>
     </button>
@@ -1094,10 +133,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 8a6 6 0 1112 0c0 7 3 7 3 9H3c0-2 3-2 3-9z"/><path d="M10 21a2 2 0 004 0"/></svg>
     </button>
 
-    <button class="me-pill">
-      <div class="avt" style="background:linear-gradient(135deg,#8b6cff,#4fd9ff);">AK</div>
-      <span class="who">Anil K.</span>
-    </button>
+    <!-- user pill removed from top-right per layout request -->
   </header>
 
   <!-- ============================================================
@@ -1135,14 +171,54 @@
       </div>
     </div>
 
+    <div id="templatePalette" class="template-palette hidden" aria-label="Template palette">
+      <div class="template-header">
+        <div>
+          <div class="template-label">Drag to create</div>
+          <div class="template-title">Quick ticket templates</div>
+        </div>
+        <button id="closeTemplatePalette" type="button" class="icon-btn small" title="Close templates">×</button>
+      </div>
+      <div class="template-list">
+        <button type="button" class="template-item" draggable="true" data-type="work" data-title="Milestone follow-up" data-ticket="CVN-302" data-owner="Priya S." data-status="doing" data-started="Today" data-target="3d" data-brief="Wire milestone progress into the ticket timeline and bind it to parent nodes.">
+          <div class="template-meta"><span class="template-name">Milestone follow-up</span><span class="template-badge doing">In progress</span></div>
+          <div class="template-desc">Create a focused task to connect milestone lines and finalize progress styling.</div>
+        </button>
+        <button type="button" class="template-item" draggable="true" data-type="subproject" data-title="New sub-project" data-ticket="CVN-408" data-owner="Arjun R." data-status="todo" data-started="TBD" data-target="2w" data-brief="Add a new sub-project node to group related ticket work and milestone cards.">
+          <div class="template-meta"><span class="template-name">New sub-project</span><span class="template-badge todo">Up next</span></div>
+          <div class="template-desc">Drop onto the canvas to add a new project area with its own right pane.</div>
+        </button>
+        <button type="button" class="template-item" draggable="true" data-type="work" data-title="Quick fix" data-ticket="CVN-321" data-owner="Anil K." data-status="todo" data-started="TBD" data-target="1d" data-brief="Create a small, template-driven ticket for quick fixes or UI polish.">
+          <div class="template-meta"><span class="template-name">Quick fix</span><span class="template-badge todo">Up next</span></div>
+          <div class="template-desc">Drag a template into the canvas and then refine details in the side panel.</div>
+        </button>
+      </div>
+    </div>
+
     <div class="canvas-stages-wrap">
 
-    <!-- AI dock (v2 preview) -->
-    <div class="ai-dock" title="Scoped AI Co-pilot — arrives in v2">
-      <div class="ai-orb"></div>
-      <div class="label">
-        Co-pilot
-        <span class="v2-tag">V2</span>
+    <!-- Canvas filters (top-right) -->
+    <div class="canvas-filters">
+      <button id="filterContribBtn" class="filter-btn" title="Filter by contributors">
+        <span class="filter-label">Contributors</span>
+        <div class="team-stack small" style="margin-left:8px;">
+          <div class="avt" title="Anil K." style="background:linear-gradient(135deg,#8b6cff,#4fd9ff);">AK</div>
+          <div class="avt" title="Priya S." style="background:linear-gradient(135deg,#3ce3b3,#2bdca8);">PS</div>
+          <div class="avt" title="Arjun R." style="background:linear-gradient(135deg,#ffb163,#ff7e6b);">AR</div>
+          <div class="avt more">+4</div>
+        </div>
+      </button>
+      <div id="filterPopup" class="filter-popup hidden">
+        <div class="filter-header">Filter — Contributors</div>
+        <div class="filter-body">
+          <label class="filter-row"><input type="checkbox" id="chkAnil" value="Anil K." checked /> <span>Anil K.</span></label>
+          <label class="filter-row"><input type="checkbox" id="chkPriya" value="Priya S." checked /> <span>Priya S.</span></label>
+          <label class="filter-row"><input type="checkbox" id="chkArjun" value="Arjun R." checked /> <span>Arjun R.</span></label>
+        </div>
+        <div class="filter-actions">
+          <button id="resetFiltersBtn" class="btn">Reset</button>
+          <button id="applyFiltersBtn" class="btn primary">Apply</button>
+        </div>
       </div>
     </div>
 
@@ -1152,7 +228,7 @@
     <div class="stage" data-view="root" id="stageRoot">
       <div class="stage-inner">
 
-        <svg class="link-layer" viewBox="0 0 1180 760" preserveAspectRatio="none">
+        <svg class="canvas-svg link-layer" viewBox="0 0 1180 760" preserveAspectRatio="none">
           <defs>
             <linearGradient id="lnkMain" x1="0" x2="1" y1="0" y2="0">
               <stop offset="0%"  stop-color="#8b6cff" stop-opacity="0.85"/>
@@ -1173,27 +249,27 @@
           </defs>
 
           <!-- 1 → 2  Discovery → BRD -->
-          <path d="M 300 150 C 360 150, 380 150, 440 150" stroke="url(#lnkMain)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
+          <path d="M 300 150 C 340 150, 380 150, 440 150" stroke="url(#lnkMain)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
           <!-- 2 → 3  BRD → Stakeholder -->
-          <path d="M 680 150 C 740 150, 760 150, 820 150" stroke="url(#lnkMain)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
+          <path d="M 680 150 C 720 150, 760 150, 820 150" stroke="url(#lnkMain)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
           <!-- 2 → 4  BRD → Backend SP -->
-          <path d="M 560 220 C 560 280, 220 270, 220 320" stroke="url(#lnkMain)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
+          <path d="M 560 220 C 560 260, 280 300, 220 320" stroke="url(#lnkMain)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
           <!-- 2 → 5  BRD → Frontend SP -->
-          <path d="M 560 220 C 560 280, 560 280, 560 320" stroke="url(#lnkMain)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
+          <path d="M 560 220 C 560 260, 560 300, 560 320" stroke="url(#lnkMain)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
           <!-- 3 → 6  Stakeholder → Compliance -->
-          <path d="M 940 220 C 940 280, 900 280, 900 320" stroke="url(#lnkMain)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
+          <path d="M 940 220 C 940 260, 900 280, 900 320" stroke="url(#lnkMain)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
           <!-- 4 → 7  Backend → Integration (merge) -->
-          <path d="M 220 540 C 220 580, 360 580, 420 600" stroke="url(#lnkMerge)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
+          <path d="M 210 540 C 210 580, 380 580, 560 600" stroke="url(#lnkMerge)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
           <!-- 5 → 7  Frontend → Integration -->
-          <path d="M 560 540 C 560 580, 460 580, 440 600" stroke="url(#lnkMerge)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
+          <path d="M 560 540 C 560 580, 560 580, 560 600" stroke="url(#lnkMerge)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
           <!-- 6 → 7  Compliance → Integration -->
-          <path d="M 900 460 C 900 540, 600 560, 580 600" stroke="url(#lnkMerge)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
+          <path d="M 900 460 C 900 520, 700 560, 560 600" stroke="url(#lnkMerge)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
           <!-- 7 → 8  Integration → Rollout -->
-          <path d="M 700 660 C 740 660, 740 660, 780 660" stroke="url(#lnkBlocked)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
+          <path d="M 700 660 C 740 660, 760 660, 780 660" stroke="url(#lnkBlocked)" stroke-width="2" fill="none" filter="url(#lnkGlow)"/>
         </svg>
 
         <!-- 1 — Process Discovery (DONE) -->
-        <div class="card work done" style="left:60px; top:80px;">
+        <div class="card work done" data-assignee="Priya S." style="left:60px; top:80px;">
           <div class="meta-row">
             <span class="id-pill">CVN-001</span>
             <span class="status-chip done"><span class="ring"></span>Done</span>
@@ -1207,7 +283,7 @@
         </div>
 
         <!-- 2 — BRD Drafting (IN PROGRESS, SELECTED) -->
-        <div class="card work doing selected" id="cardSelected" style="left:440px; top:80px;">
+        <div class="card work doing selected" id="cardSelected" data-assignee="Arjun R." style="left:440px; top:80px;">
           <div class="meta-row">
             <span class="id-pill">CVN-002</span>
             <span class="status-chip doing"><span class="ring"></span>In progress</span>
@@ -1221,7 +297,7 @@
         </div>
 
         <!-- 3 — Stakeholder alignment (TODO) -->
-        <div class="card work todo" style="left:820px; top:80px;">
+        <div class="card work todo" data-assignee="Anil K." style="left:820px; top:80px;">
           <div class="meta-row">
             <span class="id-pill">CVN-003</span>
             <span class="status-chip todo"><span class="ring"></span>Up next</span>
@@ -1235,7 +311,7 @@
         </div>
 
         <!-- 4 — Backend Sub-Project -->
-        <div class="card subproject" id="subBackend" style="left:60px; top:320px;">
+        <div class="card subproject" id="subBackend" data-assignee="Rohit G." style="left:60px; top:320px;">
           <div class="portal-frame"></div>
           <div class="meta-row">
             <span class="id-pill">CVN-SUB-04</span>
@@ -1258,7 +334,7 @@
         </div>
 
         <!-- 5 — Frontend Sub-Project -->
-        <div class="card subproject" style="left:420px; top:320px;">
+        <div class="card subproject" data-assignee="Priya M." style="left:420px; top:320px;">
           <div class="portal-frame"></div>
           <div class="meta-row">
             <span class="id-pill">CVN-SUB-05</span>
@@ -1274,14 +350,14 @@
             <div class="bar"><div class="fill" style="width:15%;"></div></div>
             <div class="progress-row"><span>1 of 7 tickets done</span><span style="color:var(--text-md);">ETA next wk</span></div>
           </div>
-          <button class="drill-btn">
+          <button class="drill-btn" onclick="goSub()">
             Drill into sub-canvas
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </button>
         </div>
 
         <!-- 6 — Compliance Review (DOING) -->
-        <div class="card work doing" style="left:780px; top:320px;">
+        <div class="card work doing" data-assignee="Sneha K." style="left:780px; top:320px;">
           <div class="meta-row">
             <span class="id-pill">CVN-006</span>
             <span class="status-chip doing"><span class="ring"></span>In progress</span>
@@ -1295,7 +371,7 @@
         </div>
 
         <!-- 7 — Integration Testing (CONSOLIDATION) -->
-        <div class="card consolidation todo" style="left:420px; top:600px;">
+        <div class="card consolidation todo" data-assignee="QA Lead" style="left:420px; top:600px;">
           <div class="merge-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v6a4 4 0 004 4h8M18 4v6a4 4 0 01-4 4"/></svg>
           </div>
@@ -1312,7 +388,7 @@
         </div>
 
         <!-- 8 — Rollout (BLOCKED) -->
-        <div class="card work blocked" style="left:780px; top:600px;">
+        <div class="card work blocked" data-assignee="Anil K." style="left:780px; top:600px;">
           <div class="meta-row">
             <span class="id-pill">CVN-008</span>
             <span class="status-chip blocked"><span class="ring"></span>Blocked</span>
@@ -1334,7 +410,7 @@
     <div class="stage hidden" data-view="sub" id="stageSub">
       <div class="stage-inner">
 
-        <svg class="link-layer" viewBox="0 0 1180 760" preserveAspectRatio="none">
+        <svg class="canvas-svg link-layer" viewBox="0 0 1180 760" preserveAspectRatio="none">
           <defs>
             <linearGradient id="lnkSub" x1="0" x2="1" y1="0" y2="0">
               <stop offset="0%"  stop-color="#4fd9ff" stop-opacity="0.85"/>
@@ -1347,20 +423,20 @@
           </defs>
 
           <!-- API → Migration -->
-          <path d="M 320 150 C 380 150, 400 150, 440 150" stroke="url(#lnkSub)" stroke-width="2" fill="none" filter="url(#lnkGlow2)"/>
+          <path d="M 320 150 C 360 150, 400 150, 440 150" stroke="url(#lnkSub)" stroke-width="2" fill="none" filter="url(#lnkGlow2)"/>
           <!-- Migration → Kafka -->
-          <path d="M 680 150 C 740 150, 760 150, 800 150" stroke="url(#lnkSub)" stroke-width="2" fill="none" filter="url(#lnkGlow2)"/>
+          <path d="M 680 150 C 720 150, 760 150, 800 150" stroke="url(#lnkSub)" stroke-width="2" fill="none" filter="url(#lnkGlow2)"/>
           <!-- API → Auth -->
-          <path d="M 200 220 C 200 290, 320 280, 320 350" stroke="url(#lnkSub)" stroke-width="2" fill="none" filter="url(#lnkGlow2)"/>
+          <path d="M 200 220 C 200 260, 320 310, 320 350" stroke="url(#lnkSub)" stroke-width="2" fill="none" filter="url(#lnkGlow2)"/>
           <!-- Migration → Endpoint -->
-          <path d="M 560 220 C 560 290, 620 280, 620 350" stroke="url(#lnkSub)" stroke-width="2" fill="none" filter="url(#lnkGlow2)"/>
+          <path d="M 560 220 C 560 260, 620 310, 620 350" stroke="url(#lnkSub)" stroke-width="2" fill="none" filter="url(#lnkGlow2)"/>
           <!-- Auth → Load test -->
-          <path d="M 320 470 C 320 540, 440 560, 480 590" stroke="url(#lnkSub)" stroke-width="2" fill="none" filter="url(#lnkGlow2)"/>
+          <path d="M 320 470 C 320 530, 500 550, 500 590" stroke="url(#lnkSub)" stroke-width="2" fill="none" filter="url(#lnkGlow2)"/>
           <!-- Endpoint → Load test -->
-          <path d="M 620 470 C 620 540, 540 560, 520 590" stroke="url(#lnkSub)" stroke-width="2" fill="none" filter="url(#lnkGlow2)"/>
+          <path d="M 620 470 C 620 530, 500 550, 500 590" stroke="url(#lnkSub)" stroke-width="2" fill="none" filter="url(#lnkGlow2)"/>
         </svg>
 
-        <div class="card work done" style="left:80px; top:80px;">
+        <div class="card work done" data-assignee="Amit S." style="left:80px; top:80px;">
           <div class="meta-row">
             <span class="id-pill">BE-001</span>
             <span class="status-chip done"><span class="ring"></span>Done</span>
@@ -1373,7 +449,7 @@
           </div>
         </div>
 
-        <div class="card work doing" style="left:440px; top:80px;">
+        <div class="card work doing" data-assignee="Vikram N." style="left:440px; top:80px;">
           <div class="meta-row">
             <span class="id-pill">BE-002</span>
             <span class="status-chip doing"><span class="ring"></span>In progress</span>
@@ -1386,7 +462,7 @@
           </div>
         </div>
 
-        <div class="card work todo" style="left:800px; top:80px;">
+        <div class="card work todo" data-assignee="Karthik R." style="left:800px; top:80px;">
           <div class="meta-row">
             <span class="id-pill">BE-003</span>
             <span class="status-chip todo"><span class="ring"></span>Up next</span>
@@ -1399,7 +475,7 @@
           </div>
         </div>
 
-        <div class="card work done" style="left:200px; top:350px;">
+        <div class="card work done" data-assignee="Amit S." style="left:200px; top:350px;">
           <div class="meta-row">
             <span class="id-pill">BE-004</span>
             <span class="status-chip done"><span class="ring"></span>Done</span>
@@ -1412,7 +488,7 @@
           </div>
         </div>
 
-        <div class="card work doing" style="left:500px; top:350px;">
+        <div class="card work doing" data-assignee="Vikram N." style="left:500px; top:350px;">
           <div class="meta-row">
             <span class="id-pill">BE-005</span>
             <span class="status-chip doing"><span class="ring"></span>In progress</span>
@@ -1425,7 +501,7 @@
           </div>
         </div>
 
-        <div class="card work todo" style="left:360px; top:590px;">
+        <div class="card work todo" data-assignee="QA Lead" style="left:360px; top:590px;">
           <div class="meta-row">
             <span class="id-pill">BE-006</span>
             <span class="status-chip todo"><span class="ring"></span>Up next</span>
@@ -1460,10 +536,10 @@
     <!-- tools -->
     <div class="tool-cluster">
       <div class="tool-pill">
-        <button class="active" title="Pan & select">
+        <button id="toolPan" class="active" title="Pan & select">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 3l16 9-7 2-2 7z"/></svg>
         </button>
-        <button title="Draw link">
+        <button id="toolLink" title="Draw link">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 7h6a4 4 0 010 8h-2M17 17H11a4 4 0 010-8h2"/></svg>
         </button>
         <button title="Add ticket">
@@ -1473,16 +549,25 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6"/><path d="M9 15l6-6"/></svg>
         </button>
       </div>
+
+      <!-- Co-pilot dock moved inline to the tool cluster -->
+      <div id="aiDock" class="ai-dock">
+        <div class="ai-orb"></div>
+        <div class="label">Co-pilot <span class="v2-tag">V2</span></div>
+      </div>
+
       <div class="tool-pill">
-        <button title="Zoom out">
+        <button id="zoomOut" title="Zoom out">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14"/></svg>
         </button>
         <span class="zoom-readout">100%</span>
-        <button title="Zoom in">
+        <button id="zoomIn" title="Zoom in">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M12 5v14"/></svg>
         </button>
       </div>
     </div>
+
+    <div id="edgeHint" class="edge-hint hidden">Select another node to connect the newly created ticket.</div>
 
     <div class="concept-tag">
       <span class="live"></span>
@@ -1490,95 +575,282 @@
     </div>
 
     </div><!-- /canvas-stages-wrap -->
+
+    <!-- Floating AI Co-pilot chat (hidden by default) -->
+    <div id="aiCopilot" class="floating-ai-copilot hidden" aria-hidden="true">
+      <div class="ai-dock-header">
+        <div class="ai-branding">
+          <div class="ai-orb" style="width:28px;height:28px;"></div>
+          <h3>Co-pilot</h3>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="aiClose" title="Close" style="width:30px;height:30px;border-radius:8px;color:var(--text-md)">✕</button>
+        </div>
+      </div>
+      <div id="aiChatViewport" class="ai-chat-viewport" style="padding:12px;">
+        <!-- messages inserted here -->
+      </div>
+      <div class="ai-input-row">
+        <input id="aiInput" placeholder="Ask the Co-pilot a question…" autocomplete="off" />
+        <button id="aiSend">Send</button>
+      </div>
+    </div>
   </main>
 
   <!-- ============================================================
        INSPECTOR
   ============================================================ -->
   <aside class="inspector" id="inspector">
-    <div class="ins-eyebrow">
-      <span class="ring"></span>
-      <span id="insEyebrow">CVN-002 · Work ticket · In progress</span>
-    </div>
-    <h1 class="ins-title serif" id="insTitle">Draft BRD —<br/>automation scope &amp; KPIs.</h1>
+    <div id="inspectorTicket">
+      <div class="ins-eyebrow">
+        <span class="ring"></span>
+        <span id="insEyebrow">CVN-002 · Work ticket · In progress</span>
+      </div>
+      <h1 class="ins-title serif" id="insTitle">Draft BRD —<br/>automation scope &amp; KPIs.</h1>
 
-    <div class="ins-meta-grid">
-      <div class="ins-cell">
-        <div class="lbl">Assignee</div>
-        <div class="val">
-          <div class="avt" style="background:linear-gradient(135deg,#ffb163,#ff7e6b);">AR</div>
-          Arjun R.
+      <div class="ins-meta-grid">
+        <div class="ins-cell">
+          <div class="lbl">Assignee</div>
+          <div class="val">
+            <div class="avt" style="background:linear-gradient(135deg,#ffb163,#ff7e6b);">AR</div>
+            Arjun R.
+          </div>
+        </div>
+        <div class="ins-cell">
+          <div class="lbl">Reporter</div>
+          <div class="val">
+            <div class="avt" style="background:linear-gradient(135deg,#8b6cff,#4fd9ff);">AK</div>
+            Anil K.
+          </div>
+        </div>
+        <div class="ins-cell">
+          <div class="lbl">Started</div>
+          <div class="val mono" style="font-size:12px;">May 22, 2026</div>
+        </div>
+        <div class="ins-cell">
+          <div class="lbl">Target</div>
+          <div class="val mono" style="font-size:12px;">May 28, 2026</div>
         </div>
       </div>
-      <div class="ins-cell">
-        <div class="lbl">Reporter</div>
-        <div class="val">
-          <div class="avt" style="background:linear-gradient(135deg,#8b6cff,#4fd9ff);">AK</div>
-          Anil K.
+
+      <div class="ins-section-label">Brief</div>
+      <div class="ins-desc">
+        Draft a <em>Business Requirements Document</em> covering scope, in/out boundaries, and the four manual steps surfaced in process discovery. Anchor every requirement to the project KPI: <b style="color:var(--text-hi)">350 hours / month saved</b> at <b style="color:var(--text-hi)">99% accuracy</b>.
+      </div>
+
+      <div class="ctx-pyramid hidden">
+        <div class="ctx-row">
+          <span class="ctx-tag">ED</span>
+          <div class="ctx-line"><b>Anil K.</b> · Digital Solutions — owns automation &amp; risk-tech platform across the bank.</div>
+        </div>
+        <div class="ctx-row">
+          <span class="ctx-tag">VP</span>
+          <div class="ctx-line"><b>WLS</b> · wholesale lending services — covenant monitoring sits here.</div>
+        </div>
+        <div class="ctx-row">
+          <span class="ctx-tag">TEAM</span>
+          <div class="ctx-line"><b>Loan Origination</b> · 8 analysts; current covenant workflow is fully manual.</div>
+        </div>
+        <div class="ctx-row">
+          <span class="ctx-tag">PROJ</span>
+          <div class="ctx-line"><b>Automation of Covenant Monitoring</b> · save 350 hrs/mo · 99% accuracy · pilot 2 branches.</div>
         </div>
       </div>
-      <div class="ins-cell">
-        <div class="lbl">Started</div>
-        <div class="val mono" style="font-size:12px;">May 22, 2026</div>
-      </div>
-      <div class="ins-cell">
-        <div class="lbl">Target</div>
-        <div class="val mono" style="font-size:12px;">May 28, 2026</div>
-      </div>
-    </div>
 
-    <div class="ins-section-label">Brief</div>
-    <div class="ins-desc">
-      Draft a <em>Business Requirements Document</em> covering scope, in/out boundaries, and the four manual steps surfaced in process discovery. Anchor every requirement to the project KPI: <b style="color:var(--text-hi)">350 hours / month saved</b> at <b style="color:var(--text-hi)">99% accuracy</b>.
-    </div>
-
-    <div class="ins-section-label">Context — pyramid <span style="color:var(--text-dim); font-weight:400; text-transform:none; letter-spacing:0; margin-left:6px;">(v2 will feed this to AI)</span></div>
-    <div class="ctx-pyramid">
-      <div class="ctx-row">
-        <span class="ctx-tag">ED</span>
-        <div class="ctx-line"><b>Anil K.</b> · Digital Solutions — owns automation &amp; risk-tech platform across the bank.</div>
-      </div>
-      <div class="ctx-row">
-        <span class="ctx-tag">VP</span>
-        <div class="ctx-line"><b>WLS</b> · wholesale lending services — covenant monitoring sits here.</div>
-      </div>
-      <div class="ctx-row">
-        <span class="ctx-tag">TEAM</span>
-        <div class="ctx-line"><b>Loan Origination</b> · 8 analysts; current covenant workflow is fully manual.</div>
-      </div>
-      <div class="ctx-row">
-        <span class="ctx-tag">PROJ</span>
-        <div class="ctx-line"><b>Automation of Covenant Monitoring</b> · save 350 hrs/mo · 99% accuracy · pilot 2 branches.</div>
-      </div>
-    </div>
-
-    <div class="ins-section-label">Recent activity</div>
-    <div class="activity">
-      <div class="act-item">
-        <div class="avt" style="background:linear-gradient(135deg,#3ce3b3,#2bdca8);">PS</div>
-        <div class="act-body">
-          <div class="top"><b>Priya S.</b> completed <b>CVN-001</b><span class="when">· 2d</span></div>
-          <div class="body">Discovery surfaced 4 manual touch-points. Notes attached on the ticket.</div>
+      <div class="ins-section-label">Milestones</div>
+      <div class="milestone-list">
+        <div class="milestone-row">
+          <div class="milestone-line">
+            <span class="timeline-dot active"></span>
+          </div>
+          <div class="milestone-card" data-ticket="CVN-003" data-title="Stakeholder alignment — Risk & Ops sign-off" data-desc="Bring Risk and Operations into the loop and complete the sign-off process for the covenant monitoring scope." data-user="Anil K." data-time="21 hours ago" data-status="Up next">
+            <div class="milestone-meta">
+              <div class="milestone-owner"><span class="avt" style="background:linear-gradient(135deg,#8b6cff,#4fd9ff);">AK</span><span>Anil K. <small class="milestone-ticket">CVN-003</small></span></div>
+              <span class="milestone-time">21 hours ago</span>
+            </div>
+            <div class="milestone-desc">Align stakeholders and collect sign-off from the Risk team before moving into the integration plan.</div>
+          </div>
+        </div>
+        <div class="milestone-row">
+          <div class="milestone-line">
+            <span class="timeline-dot"></span>
+          </div>
+          <div class="milestone-card" data-ticket="CVN-004" data-title="Regulatory review gating" data-desc="Deliver the compliance review packet and wait for formal regulatory sign-off before scheduling rollout." data-user="Priya S." data-time="3 days ago" data-status="Pending">
+            <div class="milestone-meta">
+              <div class="milestone-owner"><span class="avt" style="background:linear-gradient(135deg,#3ce3b3,#2bdca8);">PS</span><span>Priya S. <small class="milestone-ticket">CVN-004</small></span></div>
+              <span class="milestone-time">3 days ago</span>
+            </div>
+            <div class="milestone-desc">Regulatory review is still pending; this milestone is not yet achieved and is blocking the next integration step.</div>
+          </div>
         </div>
       </div>
-      <div class="act-item">
-        <div class="avt" style="background:linear-gradient(135deg,#ffb163,#ff7e6b);">AR</div>
-        <div class="act-body">
-          <div class="top"><b>Arjun R.</b> opened a draft<span class="when">· today</span></div>
-          <div class="body">Section 1 &amp; 2 done — pinging Risk for sign-off before circulating.</div>
+
+      <div class="action-row">
+        <button class="btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M16 4l4 4-12 12H4v-4z"/></svg>
+          Reassign
+        </button>
+        <button class="btn primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12l5 5L20 6"/></svg>
+          Mark complete
+        </button>
+      </div>
+    </div>
+
+    <div id="inspectorSub" class="hidden">
+      <div class="ins-eyebrow">
+        <span class="ring"></span>
+        <span id="insSubEyebrow">CVN-SUB-04 · Sub-project · In progress</span>
+      </div>
+      <h1 class="ins-title serif" id="insSubTitle">Backend —<br/>Data Ingestion Pipeline</h1>
+
+      <div class="ins-meta-grid">
+        <div class="ins-cell">
+          <div class="lbl">Led by</div>
+          <div class="val">
+            <div class="avt" style="background:linear-gradient(135deg,#5b6cff,#8b6cff);">RG</div>
+            Rohit G.
+          </div>
+        </div>
+        <div class="ins-cell">
+          <div class="lbl">Status</div>
+          <div class="val"><span class="status-chip doing"><span class="ring"></span>In progress</span></div>
+        </div>
+        <div class="ins-cell">
+          <div class="lbl">Started</div>
+          <div class="val mono" style="font-size:12px;">May 16, 2026</div>
+        </div>
+        <div class="ins-cell">
+          <div class="lbl">Target</div>
+          <div class="val mono" style="font-size:12px;">Jun 08, 2026</div>
+        </div>
+      </div>
+
+      <div class="ins-section-label">Brief</div>
+      <div class="ins-desc">
+        Deliver the backend ingestion pipeline for covenant data, including schema, stream processing, and event orchestration. Ensure the sub-project is aligned to the parent KPI and ready to roll into API validation with minimal rework.
+      </div>
+
+      <div class="ins-section-label">Milestones</div>
+      <div class="milestone-list">
+        <div class="milestone-row">
+          <div class="milestone-line">
+            <span class="timeline-dot active"></span>
+          </div>
+          <div class="milestone-card" data-ticket="BE-005" data-title="REST endpoints — covenant CRUD &amp; events" data-desc="Finish the endpoint surface for covenant data create/read/update/delete and event streaming." data-user="Vikram N." data-time="today" data-status="In progress">
+            <div class="milestone-meta">
+              <div class="milestone-owner"><span class="avt" style="background:linear-gradient(135deg,#5b6cff,#8b6cff);">VN</span><span>Vikram N. <small class="milestone-ticket">BE-005</small></span></div>
+              <span class="milestone-time">today</span>
+            </div>
+            <div class="milestone-desc">Finalize the covenant CRUD endpoints and event hooks so the backend can support the dashboard and integration flow.</div>
+          </div>
+        </div>
+        <div class="milestone-row">
+          <div class="milestone-line">
+            <span class="timeline-dot"></span>
+          </div>
+          <div class="milestone-card" data-ticket="BE-006" data-title="Load test — 50k events / hour target" data-desc="Prepare the load test harness and complete the first performance validation pass before final sign-off." data-user="QA Lead" data-time="Thu" data-status="Up next">
+            <div class="milestone-meta">
+              <div class="milestone-owner"><span class="avt" style="background:linear-gradient(135deg,#ffb163,#ff5d8f);">QA</span><span>QA Lead <small class="milestone-ticket">BE-006</small></span></div>
+              <span class="milestone-time">Thu</span>
+            </div>
+            <div class="milestone-desc">This milestone is pending; it represents the last validation gate for backend stability before integration.</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="action-row">
-      <button class="btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M16 4l4 4-12 12H4v-4z"/></svg>
-        Reassign
-      </button>
-      <button class="btn primary">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12l5 5L20 6"/></svg>
-        Mark complete
-      </button>
+    <div id="ticketModal" class="modal-overlay hidden" aria-hidden="true">
+      <div class="modal-window modal-large">
+        <div class="modal-header">
+          <div>
+            <span id="modalStatus" class="status-chip todo"><span class="ring"></span>Up next</span>
+            <span id="modalTicket" class="modal-ticket-no">CVN-003</span>
+          </div>
+          <button id="modalCloseBtn" class="modal-close" title="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <h2 id="modalTitle">Stakeholder alignment — Risk & Ops sign-off</h2>
+          <div class="modal-meta-row">
+            <div><strong>Reporter:</strong> <span id="modalUser">Anil K.</span></div>
+            <div><strong>Time:</strong> <span id="modalTime">21 hours ago</span></div>
+          </div>
+          <div class="modal-section">
+            <h3>Description</h3>
+            <p id="modalDesc">Bring Risk and Operations into the loop and complete the sign-off process for the covenant monitoring scope.</p>
+          </div>
+          <div class="modal-section">
+            <h3>Attachments</h3>
+            <div class="modal-tags">
+              <span class="tag">Spec doc</span>
+              <span class="tag">Stakeholder notes</span>
+            </div>
+          </div>
+          <div class="modal-section">
+            <h3>Comments</h3>
+            <div class="comment-row"><b>Priya S.</b> · 2h ago<div>Looks good, but we still need Risk’s timeline.</div></div>
+            <div class="comment-row"><b>Rohit G.</b> · 4h ago<div>I’m prepping the backend dependencies for the sign-off.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="createTicketModal" class="modal-overlay hidden" aria-hidden="true">
+      <div class="modal-window">
+        <div class="modal-header">
+          <div>
+            <span class="status-chip doing"><span class="ring"></span>Create ticket</span>
+            <span class="modal-ticket-no">New node</span>
+          </div>
+          <button id="createTicketClose" class="modal-close" title="Close">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group">
+            <label for="newTicketTitle">Ticket title</label>
+            <input id="newTicketTitle" placeholder="e.g. Build new covenant ingestion hook" />
+          </div>
+          <div class="input-group">
+            <label for="newTicketId">Ticket number</label>
+            <input id="newTicketId" placeholder="CVN-009" />
+          </div>
+          <div class="input-group">
+            <label for="newTicketType">Type</label>
+            <select id="newTicketType">
+              <option value="work">Work ticket</option>
+              <option value="subproject">Sub-project</option>
+            </select>
+          </div>
+          <div class="ins-meta-grid" style="margin:0; gap:10px;">
+            <div class="ins-cell">
+              <div class="lbl">Led by</div>
+              <input id="newTicketOwner" placeholder="Rohit G." />
+            </div>
+            <div class="ins-cell">
+              <div class="lbl">Status</div>
+              <select id="newTicketStatus">
+                <option value="todo">Up next</option>
+                <option value="doing">In progress</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+            <div class="ins-cell">
+              <div class="lbl">Started</div>
+              <input id="newTicketStarted" placeholder="May 22, 2026" />
+            </div>
+            <div class="ins-cell">
+              <div class="lbl">Target</div>
+              <input id="newTicketTarget" placeholder="May 28, 2026" />
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="newTicketBrief">Brief</label>
+            <textarea id="newTicketBrief" rows="4" placeholder="Short description of the ticket..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="createTicketCancel" class="btn-cancel">Cancel</button>
+          <button id="createTicketSubmit" class="btn-confirm">Create and connect</button>
+        </div>
+      </div>
     </div>
   </aside>
 
@@ -1595,8 +867,8 @@
   const pulseRoot = document.getElementById('pulseRoot');
   const pulseSub  = document.getElementById('pulseSub');
   const crumbs    = document.getElementById('breadcrumbs');
-  const insTitle  = document.getElementById('insTitle');
-  const insEye    = document.getElementById('insEyebrow');
+  const ticketPanel = document.getElementById('inspectorTicket');
+  const subPanel = document.getElementById('inspectorSub');
 
   function goSub() {
     stageRoot.classList.add('hidden');
@@ -1609,8 +881,8 @@
       '<span class="crumb" onclick="goRoot()">Covenant Monitoring</span>' +
       '<span class="sep">›</span>' +
       '<span class="crumb current">Backend — Data Ingestion Pipeline</span>';
-    insTitle.innerHTML = 'Postgres migration<br/>&amp; backfill plan.';
-    insEye.textContent = 'BE-002 · Work ticket · In progress';
+    ticketPanel.classList.add('hidden');
+    subPanel.classList.remove('hidden');
   }
   function goRoot() {
     stageSub.classList.add('hidden');
@@ -1621,19 +893,386 @@
       '<span class="crumb">Digital Solutions</span>' +
       '<span class="sep">›</span>' +
       '<span class="crumb current">Automation of Covenant Monitoring</span>';
-    insTitle.innerHTML = 'Draft BRD —<br/>automation scope &amp; KPIs.';
-    insEye.textContent = 'CVN-002 · Work ticket · In progress';
+    subPanel.classList.add('hidden');
+    ticketPanel.classList.remove('hidden');
   }
 
-  /* simple card-select highlight */
+  /* simple card-select highlight + inspector binding */
   document.querySelectorAll('.card').forEach(c => {
     c.addEventListener('click', e => {
       if (e.target.closest('.drill-btn')) return;
       document.querySelectorAll('.card.selected').forEach(x => x.classList.remove('selected'));
       c.classList.add('selected');
+
+      if (c.classList.contains('subproject')) {
+        ticketPanel.classList.add('hidden');
+        subPanel.classList.remove('hidden');
+      } else {
+        subPanel.classList.add('hidden');
+        ticketPanel.classList.remove('hidden');
+      }
     });
   });
-</script>
 
+  /* AI Co-pilot: toggle chat panel and simple send/echo responses */
+  const aiDock = document.getElementById('aiDock');
+  const aiCopilot = document.getElementById('aiCopilot');
+  const aiClose = document.getElementById('aiClose');
+  const aiSend = document.getElementById('aiSend');
+  const aiInput = document.getElementById('aiInput');
+  const aiChatViewport = document.getElementById('aiChatViewport');
+
+  function openAi() {
+    aiCopilot.classList.remove('hidden');
+    aiCopilot.setAttribute('aria-hidden','false');
+    aiInput.focus();
+  }
+  function closeAi() {
+    aiCopilot.classList.add('hidden');
+    aiCopilot.setAttribute('aria-hidden','true');
+  }
+
+  aiDock && aiDock.addEventListener('click', () => {
+    const isHidden = aiCopilot.classList.contains('hidden');
+    if (isHidden) openAi(); else closeAi();
+  });
+  aiClose && aiClose.addEventListener('click', closeAi);
+
+  function appendMsg(text, from='bot') {
+    const el = document.createElement('div');
+    el.className = 'ai-bubble';
+    el.style.marginBottom = '8px';
+    el.textContent = text;
+    if (from === 'user') { el.style.borderLeft = '2px solid var(--cyan)'; el.style.background = '#0b1220'; }
+    aiChatViewport.appendChild(el);
+    aiChatViewport.scrollTop = aiChatViewport.scrollHeight;
+  }
+
+  function sendAiQuestion() {
+    const q = aiInput.value && aiInput.value.trim();
+    if (!q) return;
+    appendMsg(q, 'user');
+    aiInput.value = '';
+    // naive simulated response
+    setTimeout(() => {
+      appendMsg('Co-pilot: I received your question — here is a helpful hint based on UI state.');
+    }, 700);
+  }
+
+  aiSend && aiSend.addEventListener('click', sendAiQuestion);
+  aiInput && aiInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendAiQuestion(); });
+
+  /* Contributors filter popup toggle + apply/reset behavior */
+  const filterBtnEl = document.getElementById('filterContribBtn');
+  const filterPopup = document.getElementById('filterPopup');
+  const applyBtn = document.getElementById('applyFiltersBtn');
+  const resetBtn = document.getElementById('resetFiltersBtn');
+  if (filterBtnEl && filterPopup) {
+    filterBtnEl.addEventListener('click', (e) => { e.stopPropagation(); filterPopup.classList.toggle('hidden'); });
+    filterPopup.addEventListener('click', (e) => e.stopPropagation());
+    document.addEventListener('click', () => filterPopup.classList.add('hidden'));
+  }
+
+  function getCheckedContributors() {
+    return Array.from(filterPopup.querySelectorAll('input[type=checkbox]:checked')).map(i => i.value);
+  }
+
+  function applyFilters() {
+    const checked = getCheckedContributors();
+    const cards = document.querySelectorAll('.stage .card');
+    if (!checked.length) {
+      cards.forEach(c => c.classList.remove('hidden'));
+      return;
+    }
+    cards.forEach(c => {
+      const assignee = c.getAttribute('data-assignee') || '';
+      if (checked.includes(assignee)) c.classList.remove('hidden'); else c.classList.add('hidden');
+    });
+  }
+
+  function resetFilters() {
+    filterPopup.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = true);
+    applyFilters();
+  }
+
+  applyBtn && applyBtn.addEventListener('click', () => { applyFilters(); filterPopup.classList.add('hidden'); });
+  resetBtn && resetBtn.addEventListener('click', () => { resetFilters(); });
+
+  /* Ticket milestone card modal behavior */
+  const milestoneCards = document.querySelectorAll('.milestone-card');
+  const ticketModal = document.getElementById('ticketModal');
+  const modalCloseBtn = document.getElementById('modalCloseBtn');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalDesc = document.getElementById('modalDesc');
+  const modalUser = document.getElementById('modalUser');
+  const modalTime = document.getElementById('modalTime');
+  const modalTicket = document.getElementById('modalTicket');
+  const modalStatus = document.getElementById('modalStatus');
+  const createTicketModal = document.getElementById('createTicketModal');
+  const btnCreateTicket = document.getElementById('btnCreateTicket');
+  const createTicketClose = document.getElementById('createTicketClose');
+  const createTicketCancel = document.getElementById('createTicketCancel');
+  const createTicketSubmit = document.getElementById('createTicketSubmit');
+  const edgeHint = document.getElementById('edgeHint');
+  const newTicketTitle = document.getElementById('newTicketTitle');
+  const newTicketId = document.getElementById('newTicketId');
+  const newTicketType = document.getElementById('newTicketType');
+  const newTicketOwner = document.getElementById('newTicketOwner');
+  const newTicketStatus = document.getElementById('newTicketStatus');
+  const newTicketStarted = document.getElementById('newTicketStarted');
+  const newTicketTarget = document.getElementById('newTicketTarget');
+  const newTicketBrief = document.getElementById('newTicketBrief');
+  const templatePalette = document.getElementById('templatePalette');
+  const closeTemplatePalette = document.getElementById('closeTemplatePalette');
+  const paletteItems = document.querySelectorAll('.template-item');
+  const stageWrap = document.querySelector('.canvas-stages-wrap');
+
+  let pendingLinkSource = null;
+
+  function openCreateTicket() {
+    createTicketModal.classList.remove('hidden');
+    createTicketModal.setAttribute('aria-hidden','false');
+    newTicketTitle.focus();
+  }
+
+  function closeCreateTicket(keepHint = false) {
+    createTicketModal.classList.add('hidden');
+    createTicketModal.setAttribute('aria-hidden','true');
+    if (!keepHint) {
+      edgeHint.classList.add('hidden');
+      pendingLinkSource = null;
+    }
+  }
+
+  function getActiveStage() {
+    return stageSub.classList.contains('hidden') ? stageRoot : stageSub;
+  }
+
+  function addCardInteractions(card) {
+    card.addEventListener('click', e => {
+      if (e.target.closest('.drill-btn')) return;
+      document.querySelectorAll('.card.selected').forEach(x => x.classList.remove('selected'));
+      card.classList.add('selected');
+      if (pendingLinkSource && pendingLinkSource !== card) {
+        createEdge(pendingLinkSource, card);
+      }
+      if (card.classList.contains('subproject')) {
+        ticketPanel.classList.add('hidden');
+        subPanel.classList.remove('hidden');
+      } else {
+        subPanel.classList.add('hidden');
+        ticketPanel.classList.remove('hidden');
+      }
+    });
+  }
+
+  function createTemplateCard(template, x, y) {
+    const title = template.title || 'New ticket';
+    const ticket = template.ticket || `CVN-${Math.floor(100 + Math.random() * 900)}`;
+    const owner = template.owner || 'Team lead';
+    const status = template.status || 'todo';
+    const started = template.started || 'TBD';
+    const target = template.target || 'TBD';
+    const brief = template.brief || 'No description provided yet.';
+    const type = template.type === 'subproject' ? 'subproject' : 'work';
+    const stage = getActiveStage();
+    const card = document.createElement('div');
+    card.className = `card ${type} ${status === 'doing' ? 'doing' : status === 'done' ? 'done' : 'todo'}`;
+    card.setAttribute('data-assignee', owner);
+    card.dataset.ticket = ticket;
+    card.dataset.title = title;
+    card.dataset.desc = brief;
+    card.dataset.user = owner;
+    card.dataset.time = target;
+    card.dataset.status = status === 'doing' ? 'In progress' : status === 'done' ? 'Done' : 'Up next';
+    card.style.left = `${Math.max(40, Math.min(880, x))}px`;
+    card.style.top = `${Math.max(40, Math.min(580, y))}px`;
+    card.innerHTML = `
+      <div class="meta-row">
+        <span class="id-pill">${ticket}</span>
+        <span class="status-chip ${status}"><span class="ring"></span>${status === 'doing' ? 'In progress' : status === 'done' ? 'Done' : 'Up next'}</span>
+      </div>
+      <h3>${title}</h3>
+      <div class="foot">
+        <div class="avt" style="background:linear-gradient(135deg,#8b6cff,#4fd9ff);">${owner.split(' ').map(n => n[0]).join('').slice(0,2)}</div>
+        <span class="who">${owner}</span>
+        <span class="when">${started}</span>
+      </div>
+    `;
+    stage.querySelector('.stage-inner').appendChild(card);
+    addCardInteractions(card);
+    document.querySelectorAll('.card.selected').forEach(x => x.classList.remove('selected'));
+    card.classList.add('selected');
+    pendingLinkSource = card;
+    card.classList.add('pending-link');
+    edgeHint.classList.remove('hidden');
+    templatePalette.classList.add('hidden');
+  }
+
+  function toggleTemplatePalette() {
+    templatePalette.classList.toggle('hidden');
+  }
+
+  function closePalette() {
+    templatePalette.classList.add('hidden');
+  }
+
+  function initPaletteDrag() {
+    paletteItems.forEach(item => {
+      item.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('application/json', JSON.stringify({
+          type: item.dataset.type,
+          title: item.dataset.title,
+          ticket: item.dataset.ticket,
+          owner: item.dataset.owner,
+          status: item.dataset.status,
+          started: item.dataset.started,
+          target: item.dataset.target,
+          brief: item.dataset.brief
+        }));
+        e.dataTransfer.effectAllowed = 'copy';
+      });
+    });
+
+    stageWrap && stageWrap.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+    });
+
+    stageWrap && stageWrap.addEventListener('drop', e => {
+      e.preventDefault();
+      const payload = e.dataTransfer.getData('application/json');
+      if (!payload) return;
+      let template;
+      try {
+        template = JSON.parse(payload);
+      } catch (err) {
+        return;
+      }
+      const stage = getActiveStage();
+      const stageRect = stage.querySelector('.stage-inner').getBoundingClientRect();
+      const x = e.clientX - stageRect.left - 120;
+      const y = e.clientY - stageRect.top - 48;
+      createTemplateCard(template, x, y);
+    });
+  }
+
+  function getActiveSvg(stage) {
+    return stage.querySelector('svg.canvas-svg');
+  }
+
+  function createEdge(source, target) {
+    const stage = getActiveStage();
+    const svg = getActiveSvg(stage);
+    const sourceRect = source.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const containerRect = svg.getBoundingClientRect();
+    const startX = sourceRect.left + sourceRect.width / 2 - containerRect.left;
+    const startY = sourceRect.top + sourceRect.height / 2 - containerRect.top;
+    const endX = targetRect.left + targetRect.width / 2 - containerRect.left;
+    const endY = targetRect.top + targetRect.height / 2 - containerRect.top;
+    const gradient = stage.querySelector('defs linearGradient');
+    const gradientId = gradient ? gradient.id : 'lnkMain';
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', `M ${startX} ${startY} C ${startX + 80} ${startY}, ${endX - 80} ${endY}, ${endX} ${endY}`);
+    path.setAttribute('stroke', `url(#${gradientId})`);
+    path.setAttribute('stroke-width', '2');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('opacity', '0.85');
+    svg.appendChild(path);
+    source.classList.remove('pending-link');
+    pendingLinkSource = null;
+    edgeHint.classList.add('hidden');
+  }
+
+  function createNewTicket() {
+    const title = newTicketTitle.value.trim() || 'New ticket';
+    const ticket = newTicketId.value.trim() || `CVN-${Math.floor(100 + Math.random() * 900)}`;
+    const type = newTicketType.value === 'subproject' ? 'subproject' : 'work';
+    const owner = newTicketOwner.value.trim() || 'Team lead';
+    const status = newTicketStatus.value;
+    const started = newTicketStarted.value.trim() || 'TBD';
+    const target = newTicketTarget.value.trim() || 'TBD';
+    const brief = newTicketBrief.value.trim() || 'No description provided yet.';
+    const stage = getActiveStage();
+    const card = document.createElement('div');
+    card.className = `card ${type} ${status === 'doing' ? 'doing' : status === 'done' ? 'done' : 'todo'}`;
+    card.setAttribute('data-assignee', owner);
+    card.style.left = '520px';
+    card.style.top = '260px';
+    card.innerHTML = `
+      <div class="meta-row">
+        <span class="id-pill">${ticket}</span>
+        <span class="status-chip ${status}"><span class="ring"></span>${status === 'doing' ? 'In progress' : status === 'done' ? 'Done' : 'Up next'}</span>
+      </div>
+      <h3>${title}</h3>
+      <div class="foot">
+        <div class="avt" style="background:linear-gradient(135deg,#8b6cff,#4fd9ff);">${owner.split(' ').map(n => n[0]).join('').slice(0,2)}</div>
+        <span class="who">${owner}</span>
+        <span class="when">${started}</span>
+      </div>
+    `;
+    stage.querySelector('.stage-inner').appendChild(card);
+    card.addEventListener('click', e => {
+      if (e.target.closest('.drill-btn')) return;
+      document.querySelectorAll('.card.selected').forEach(x => x.classList.remove('selected'));
+      card.classList.add('selected');
+      if (pendingLinkSource && pendingLinkSource !== card) {
+        createEdge(pendingLinkSource, card);
+      }
+      if (card.classList.contains('subproject')) {
+        ticketPanel.classList.add('hidden');
+        subPanel.classList.remove('hidden');
+      } else {
+        subPanel.classList.add('hidden');
+        ticketPanel.classList.remove('hidden');
+      }
+    });
+    document.querySelectorAll('.card.selected').forEach(x => x.classList.remove('selected'));
+    card.classList.add('selected');
+    pendingLinkSource = card;
+    card.classList.add('pending-link');
+    edgeHint.classList.remove('hidden');
+    closeCreateTicket(true);
+  }
+
+  btnCreateTicket && btnCreateTicket.addEventListener('click', toggleTemplatePalette);
+  closeTemplatePalette && closeTemplatePalette.addEventListener('click', closePalette);
+  initPaletteDrag();
+  createTicketClose && createTicketClose.addEventListener('click', closeCreateTicket);
+  createTicketCancel && createTicketCancel.addEventListener('click', closeCreateTicket);
+  createTicketSubmit && createTicketSubmit.addEventListener('click', e => {
+    e.preventDefault();
+    createNewTicket();
+  });
+
+  function openTicketModal(card) {
+    if (!card) return;
+    modalTicket.textContent = card.dataset.ticket;
+    modalTitle.textContent = card.dataset.title;
+    modalDesc.textContent = card.dataset.desc;
+    modalUser.textContent = card.dataset.user;
+    modalTime.textContent = card.dataset.time;
+    modalStatus.textContent = card.dataset.status;
+    modalStatus.className = 'status-chip ' + (card.dataset.status === 'Up next' ? 'todo' : card.dataset.status === 'In progress' ? 'doing' : 'done');
+    ticketModal.classList.remove('hidden');
+    ticketModal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeTicketModal() {
+    ticketModal.classList.add('hidden');
+    ticketModal.setAttribute('aria-hidden', 'true');
+  }
+
+  milestoneCards.forEach(card => {
+    card.addEventListener('click', () => openTicketModal(card));
+  });
+
+  modalCloseBtn && modalCloseBtn.addEventListener('click', closeTicketModal);
+  ticketModal && ticketModal.addEventListener('click', (e) => {
+    if (e.target === ticketModal) closeTicketModal();
+  });
+</script>
+<script type="module" src="kosh-main.js"></script>
 </body>
 </html>
