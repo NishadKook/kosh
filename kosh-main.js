@@ -1,5 +1,5 @@
 // wire main module and kosh UI interactions (moved from inline script)
-import './src/main.js';
+// import './src/main.js';
 import './src/ui-tools.js';
 const stageRoot = document.getElementById('stageRoot');
 const stageSub  = document.getElementById('stageSub');

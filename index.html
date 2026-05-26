@@ -35,7 +35,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="15" height="15"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
         Search & jump
       </div>
-      <div class="rail-item">
+      <div class="rail-item" id="myTicketsNav">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="15" height="15"><path d="M3 5h18M3 12h18M3 19h18"/></svg>
         My tickets <span class="count">14</span>
       </div>
@@ -48,7 +48,7 @@
         <span>Projects</span>
         <span class="add">+</span>
       </div>
-      <div class="rail-item active">
+      <div class="rail-item active" id="projectNav">
         <span class="swatch"></span>
         Covenant Monitoring
         <span class="count">12</span>
@@ -269,7 +269,7 @@
         </svg>
 
         <!-- 1 — Process Discovery (DONE) -->
-        <div class="card work done" data-assignee="Priya S." style="left:60px; top:80px;">
+        <div class="card work done" data-ticket="CVN-001" data-assignee="Priya S." style="left:60px; top:80px;">
           <div class="meta-row">
             <span class="id-pill">CVN-001</span>
             <span class="status-chip done"><span class="ring"></span>Done</span>
@@ -283,7 +283,7 @@
         </div>
 
         <!-- 2 — BRD Drafting (IN PROGRESS, SELECTED) -->
-        <div class="card work doing selected" id="cardSelected" data-assignee="Arjun R." style="left:440px; top:80px;">
+        <div class="card work doing selected" id="cardSelected" data-ticket="CVN-002" data-assignee="Arjun R." style="left:440px; top:80px;">
           <div class="meta-row">
             <span class="id-pill">CVN-002</span>
             <span class="status-chip doing"><span class="ring"></span>In progress</span>
@@ -297,7 +297,7 @@
         </div>
 
         <!-- 3 — Stakeholder alignment (TODO) -->
-        <div class="card work todo" data-assignee="Anil K." style="left:820px; top:80px;">
+        <div class="card work todo" data-ticket="CVN-003" data-assignee="Anil K." style="left:820px; top:80px;">
           <div class="meta-row">
             <span class="id-pill">CVN-003</span>
             <span class="status-chip todo"><span class="ring"></span>Up next</span>
@@ -311,7 +311,7 @@
         </div>
 
         <!-- 4 — Backend Sub-Project -->
-        <div class="card subproject" id="subBackend" data-assignee="Rohit G." style="left:60px; top:320px;">
+        <div class="card subproject" id="subBackend" data-ticket="CVN-SUB-04" data-assignee="Rohit G." style="left:60px; top:320px;">
           <div class="portal-frame"></div>
           <div class="meta-row">
             <span class="id-pill">CVN-SUB-04</span>
@@ -334,7 +334,7 @@
         </div>
 
         <!-- 5 — Frontend Sub-Project -->
-        <div class="card subproject" data-assignee="Priya M." style="left:420px; top:320px;">
+        <div class="card subproject" data-ticket="CVN-SUB-05" data-assignee="Priya M." style="left:420px; top:320px;">
           <div class="portal-frame"></div>
           <div class="meta-row">
             <span class="id-pill">CVN-SUB-05</span>
@@ -357,7 +357,7 @@
         </div>
 
         <!-- 6 — Compliance Review (DOING) -->
-        <div class="card work doing" data-assignee="Sneha K." style="left:780px; top:320px;">
+        <div class="card work doing" data-ticket="CVN-006" data-assignee="Sneha K." style="left:780px; top:320px;">
           <div class="meta-row">
             <span class="id-pill">CVN-006</span>
             <span class="status-chip doing"><span class="ring"></span>In progress</span>
@@ -371,7 +371,7 @@
         </div>
 
         <!-- 7 — Integration Testing (CONSOLIDATION) -->
-        <div class="card consolidation todo" data-assignee="QA Lead" style="left:420px; top:600px;">
+        <div class="card consolidation todo" data-ticket="CVN-007" data-assignee="QA Lead" style="left:420px; top:600px;">
           <div class="merge-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v6a4 4 0 004 4h8M18 4v6a4 4 0 01-4 4"/></svg>
           </div>
@@ -388,7 +388,7 @@
         </div>
 
         <!-- 8 — Rollout (BLOCKED) -->
-        <div class="card work blocked" data-assignee="Anil K." style="left:780px; top:600px;">
+        <div class="card work blocked" data-ticket="CVN-008" data-assignee="Anil K." style="left:780px; top:600px;">
           <div class="meta-row">
             <span class="id-pill">CVN-008</span>
             <span class="status-chip blocked"><span class="ring"></span>Blocked</span>
@@ -436,7 +436,7 @@
           <path d="M 620 470 C 620 530, 500 550, 500 590" stroke="url(#lnkSub)" stroke-width="2" fill="none" filter="url(#lnkGlow2)"/>
         </svg>
 
-        <div class="card work done" data-assignee="Amit S." style="left:80px; top:80px;">
+        <div class="card work done" data-ticket="BE-001" data-assignee="Amit S." style="left:80px; top:80px;">
           <div class="meta-row">
             <span class="id-pill">BE-001</span>
             <span class="status-chip done"><span class="ring"></span>Done</span>
@@ -449,7 +449,7 @@
           </div>
         </div>
 
-        <div class="card work doing" data-assignee="Vikram N." style="left:440px; top:80px;">
+        <div class="card work doing" data-ticket="BE-002" data-assignee="Vikram N." style="left:440px; top:80px;">
           <div class="meta-row">
             <span class="id-pill">BE-002</span>
             <span class="status-chip doing"><span class="ring"></span>In progress</span>
@@ -462,7 +462,7 @@
           </div>
         </div>
 
-        <div class="card work todo" data-assignee="Karthik R." style="left:800px; top:80px;">
+        <div class="card work todo" data-ticket="BE-003" data-assignee="Karthik R." style="left:800px; top:80px;">
           <div class="meta-row">
             <span class="id-pill">BE-003</span>
             <span class="status-chip todo"><span class="ring"></span>Up next</span>
@@ -475,7 +475,7 @@
           </div>
         </div>
 
-        <div class="card work done" data-assignee="Amit S." style="left:200px; top:350px;">
+        <div class="card work done" data-ticket="BE-004" data-assignee="Amit S." style="left:200px; top:350px;">
           <div class="meta-row">
             <span class="id-pill">BE-004</span>
             <span class="status-chip done"><span class="ring"></span>Done</span>
@@ -488,7 +488,7 @@
           </div>
         </div>
 
-        <div class="card work doing" data-assignee="Vikram N." style="left:500px; top:350px;">
+        <div class="card work doing" data-ticket="BE-005" data-assignee="Vikram N." style="left:500px; top:350px;">
           <div class="meta-row">
             <span class="id-pill">BE-005</span>
             <span class="status-chip doing"><span class="ring"></span>In progress</span>
@@ -501,7 +501,7 @@
           </div>
         </div>
 
-        <div class="card work todo" data-assignee="QA Lead" style="left:360px; top:590px;">
+        <div class="card work todo" data-ticket="BE-006" data-assignee="QA Lead" style="left:360px; top:590px;">
           <div class="meta-row">
             <span class="id-pill">BE-006</span>
             <span class="status-chip todo"><span class="ring"></span>Up next</span>
@@ -514,6 +514,23 @@
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <div class="stage hidden" data-view="user" id="stageUser">
+      <div class="stage-inner">
+        <div class="user-board">
+          <div class="user-board-header">
+            <div>
+              <div class="user-board-label">User view</div>
+              <div class="user-board-title">Personal ticket board</div>
+            </div>
+            <button id="backToProjectBtn" class="btn small" type="button">Back to project</button>
+          </div>
+          <div class="user-lanes" id="userLanes">
+            <!-- lanes rendered from canvas tickets -->
+          </div>
+        </div>
       </div>
     </div>
 
@@ -864,14 +881,261 @@
   */
   const stageRoot = document.getElementById('stageRoot');
   const stageSub  = document.getElementById('stageSub');
+  const stageUser = document.getElementById('stageUser');
   const pulseRoot = document.getElementById('pulseRoot');
   const pulseSub  = document.getElementById('pulseSub');
   const crumbs    = document.getElementById('breadcrumbs');
   const ticketPanel = document.getElementById('inspectorTicket');
   const subPanel = document.getElementById('inspectorSub');
+  const projectNav = document.getElementById('projectNav');
+  const myTicketsNav = document.getElementById('myTicketsNav');
+  const backToProjectBtn = document.getElementById('backToProjectBtn');
+  const userLanes = document.getElementById('userLanes');
+
+  function hideAllStages() {
+    stageRoot.classList.add('hidden');
+    stageSub.classList.add('hidden');
+    stageUser.classList.add('hidden');
+  }
+  function clearNavActive() {
+    [projectNav, myTicketsNav].forEach(item => item && item.classList.remove('active'));
+  }
+  function activateNav(item) {
+    if (item) item.classList.add('active');
+  }
+
+  function getCardTicket(card) {
+    return card.dataset.ticket || card.querySelector('.id-pill')?.textContent.trim() || '';
+  }
+
+  function findCanvasCard(ticket) {
+    return document.querySelector(`.stage .stage-inner > .card[data-ticket="${ticket}"]`);
+  }
+
+  function getLaneKey(card) {
+    if (card.classList.contains('done')) return 'done';
+    if (card.classList.contains('doing')) return 'doing';
+    if (card.classList.contains('blocked')) return 'review';
+    return 'todo';
+  }
+
+  function getCanvasStatusFromLane(laneKey) {
+    if (laneKey === 'doing') return 'doing';
+    if (laneKey === 'done') return 'done';
+    if (laneKey === 'review') return 'blocked';
+    return 'todo';
+  }
+
+  function getBoardLabel(statusKey) {
+    if (statusKey === 'doing') return 'In progress';
+    if (statusKey === 'done') return 'Done';
+    if (statusKey === 'review') return 'Review';
+    return 'Up next';
+  }
+
+  function getBoardChipClass(statusKey) {
+    if (statusKey === 'doing') return 'doing';
+    if (statusKey === 'done') return 'done';
+    if (statusKey === 'review') return 'review';
+    return 'todo';
+  }
+
+  function updateCardStatus(card, status) {
+    card.classList.remove('todo', 'doing', 'done', 'blocked');
+    card.classList.add(status);
+    const chip = card.querySelector('.status-chip');
+    if (!chip) return;
+    const label = status === 'doing' ? 'In progress' : status === 'done' ? 'Done' : status === 'blocked' ? 'Review' : 'Up next';
+    chip.className = 'status-chip ' + status;
+    chip.innerHTML = `<span class="ring"></span>${label}`;
+  }
+
+  function moveCanvasCardStage(card, stage) {
+    const targetStage = stage === 'sub' ? stageSub : stageRoot;
+    const container = targetStage.querySelector('.stage-inner');
+    if (container && container !== card.parentElement) {
+      container.appendChild(card);
+    }
+  }
+
+  function updateCanvasCard(ticket, updates) {
+    const card = findCanvasCard(ticket);
+    if (!card) return;
+    const { assignee, status, stage } = updates;
+    if (assignee) {
+      card.dataset.assignee = assignee;
+      const who = card.querySelector('.who');
+      if (who) who.textContent = assignee;
+      const avt = card.querySelector('.foot .avt');
+      if (avt) avt.textContent = assignee.split(' ').map(n => n[0] || '').join('').slice(0, 2);
+    }
+    if (status) updateCardStatus(card, status);
+    if (stage) moveCanvasCardStage(card, stage);
+    if (card.classList.contains('selected')) selectCanvasCard(card);
+  }
+
+  function selectCanvasCard(card) {
+    if (!card) return;
+    document.querySelectorAll('.card.selected').forEach(x => x.classList.remove('selected'));
+    card.classList.add('selected');
+    if (card.classList.contains('subproject')) {
+      ticketPanel.classList.add('hidden');
+      subPanel.classList.remove('hidden');
+    } else {
+      subPanel.classList.add('hidden');
+      ticketPanel.classList.remove('hidden');
+    }
+  }
+
+  function renderUserBoard() {
+    const lanesConfig = [
+      { key: 'todo', title: 'To do', empty: 'No upcoming work' },
+      { key: 'doing', title: 'In progress', empty: 'No work in progress' },
+      { key: 'review', title: 'Review', empty: 'No reviews pending' },
+      { key: 'done', title: 'Done', empty: 'No completed tickets' }
+    ];
+
+    const cards = Array.from(document.querySelectorAll('.stage[data-view="root"] .stage-inner > .card, .stage[data-view="sub"] .stage-inner > .card'));
+    const lanes = cards.reduce((acc, card) => {
+      const ticket = getCardTicket(card);
+      if (!ticket) return acc;
+      const assignee = card.dataset.assignee || card.querySelector('.who')?.textContent.trim() || 'Unassigned';
+      const title = card.querySelector('h3')?.textContent.trim() || '';
+      const stage = card.closest('.stage')?.dataset.view || 'root';
+      const status = getLaneKey(card);
+      if (!acc[status]) acc[status] = [];
+      acc[status].push({ ticket, title, assignee, stage, status });
+      return acc;
+    }, {});
+
+    userLanes.innerHTML = '';
+    lanesConfig.forEach(laneCfg => {
+      const lane = document.createElement('div');
+      lane.className = 'user-lane';
+      lane.dataset.status = laneCfg.key;
+      lane.innerHTML = `
+        <div class="user-lane-title">
+          <span>${laneCfg.title}</span>
+          <span>${(lanes[laneCfg.key] || []).length} tickets</span>
+        </div>
+      `;
+
+      const list = document.createElement('div');
+      list.className = 'user-lane-cards';
+      list.addEventListener('dragover', e => {
+        e.preventDefault();
+        list.classList.add('dragover');
+        e.dataTransfer.dropEffect = 'move';
+      });
+      list.addEventListener('dragleave', () => {
+        list.classList.remove('dragover');
+      });
+      list.addEventListener('drop', e => {
+        e.preventDefault();
+        list.classList.remove('dragover');
+        const ticket = e.dataTransfer.getData('text/plain');
+        if (!ticket) return;
+        const nextStatus = getCanvasStatusFromLane(laneCfg.key);
+        updateCanvasCard(ticket, { status: nextStatus });
+        renderUserBoard();
+      });
+
+      (lanes[laneCfg.key] || []).forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'user-ticket-card';
+        card.setAttribute('draggable', 'true');
+        card.dataset.ticket = item.ticket;
+        card.dataset.stage = item.stage;
+        const isSelected = findCanvasCard(item.ticket)?.classList.contains('selected');
+        if (isSelected) card.classList.add('selected');
+        card.innerHTML = `
+          <div class="user-ticket-id">${item.ticket}</div>
+          <div class="user-ticket-title">${item.title}</div>
+          <div class="user-ticket-meta">
+            <span class="status-chip ${getBoardChipClass(item.status)}"><span class="ring"></span>${getBoardLabel(item.status)}</span>
+            <span class="user-ticket-stage">${item.stage === 'sub' ? 'Sub-project' : 'Project'}</span>
+          </div>
+          <div class="user-ticket-actions">
+            <input class="user-edit-assignee" value="${item.assignee}" aria-label="Assignee" />
+            <select class="user-edit-status" aria-label="Status">
+              <option value="todo" ${item.status === 'todo' ? 'selected' : ''}>To do</option>
+              <option value="doing" ${item.status === 'doing' ? 'selected' : ''}>In progress</option>
+              <option value="review" ${item.status === 'review' ? 'selected' : ''}>Review</option>
+              <option value="done" ${item.status === 'done' ? 'selected' : ''}>Done</option>
+            </select>
+            <select class="user-edit-stage" aria-label="Stage">
+              <option value="root" ${item.stage === 'root' ? 'selected' : ''}>Project</option>
+              <option value="sub" ${item.stage === 'sub' ? 'selected' : ''}>Sub-project</option>
+            </select>
+          </div>
+        `;
+
+        card.addEventListener('dragstart', e => {
+          e.dataTransfer.setData('text/plain', item.ticket);
+          e.dataTransfer.effectAllowed = 'move';
+        });
+
+        card.addEventListener('click', e => {
+          if (e.target.closest('.user-ticket-actions')) return;
+          if (item.stage === 'sub') goSub(); else goRoot();
+          const targetCard = findCanvasCard(item.ticket);
+          if (targetCard) {
+            selectCanvasCard(targetCard);
+            targetCard.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+          }
+        });
+
+        const assigneeInput = card.querySelector('.user-edit-assignee');
+        const statusSelect = card.querySelector('.user-edit-status');
+        const stageSelect = card.querySelector('.user-edit-stage');
+
+        assigneeInput.addEventListener('change', () => {
+          updateCanvasCard(item.ticket, { assignee: assigneeInput.value });
+          renderUserBoard();
+        });
+
+        statusSelect.addEventListener('change', () => {
+          const nextStatus = getCanvasStatusFromLane(statusSelect.value);
+          updateCanvasCard(item.ticket, { status: nextStatus });
+          renderUserBoard();
+        });
+
+        stageSelect.addEventListener('change', () => {
+          updateCanvasCard(item.ticket, { stage: stageSelect.value });
+          renderUserBoard();
+        });
+
+        list.appendChild(card);
+      });
+
+      const cardsInLane = lanes[laneCfg.key] || [];
+      if (!cardsInLane.length) {
+        const empty = document.createElement('div');
+        empty.className = 'user-lane-empty';
+        empty.textContent = laneCfg.empty;
+        list.appendChild(empty);
+      }
+
+      lane.appendChild(list);
+      userLanes.appendChild(lane);
+    });
+  }
+
+  function goUser() {
+    hideAllStages();
+    stageUser.classList.remove('hidden');
+    pulseRoot.classList.add('hidden');
+    pulseSub.classList.add('hidden');
+    crumbs.innerHTML = '<span class="crumb">Digital Solutions</span><span class="sep">›</span><span class="crumb current">My tickets</span>';
+    clearNavActive();
+    activateNav(myTicketsNav);
+    renderUserBoard();
+    ticketPanel.classList.add('hidden');
+    subPanel.classList.add('hidden');
+  }
 
   function goSub() {
-    stageRoot.classList.add('hidden');
+    hideAllStages();
     stageSub.classList.remove('hidden');
     pulseRoot.classList.add('hidden');
     pulseSub.classList.remove('hidden');
@@ -881,11 +1145,14 @@
       '<span class="crumb" onclick="goRoot()">Covenant Monitoring</span>' +
       '<span class="sep">›</span>' +
       '<span class="crumb current">Backend — Data Ingestion Pipeline</span>';
+    clearNavActive();
+    activateNav(projectNav);
     ticketPanel.classList.add('hidden');
     subPanel.classList.remove('hidden');
   }
+
   function goRoot() {
-    stageSub.classList.add('hidden');
+    hideAllStages();
     stageRoot.classList.remove('hidden');
     pulseSub.classList.add('hidden');
     pulseRoot.classList.remove('hidden');
@@ -893,9 +1160,15 @@
       '<span class="crumb">Digital Solutions</span>' +
       '<span class="sep">›</span>' +
       '<span class="crumb current">Automation of Covenant Monitoring</span>';
+    clearNavActive();
+    activateNav(projectNav);
     subPanel.classList.add('hidden');
     ticketPanel.classList.remove('hidden');
   }
+
+  backToProjectBtn && backToProjectBtn.addEventListener('click', goRoot);
+  myTicketsNav && myTicketsNav.addEventListener('click', goUser);
+  projectNav && projectNav.addEventListener('click', goRoot);
 
   /* simple card-select highlight + inspector binding */
   document.querySelectorAll('.card').forEach(c => {
@@ -1197,6 +1470,7 @@
     const stage = getActiveStage();
     const card = document.createElement('div');
     card.className = `card ${type} ${status === 'doing' ? 'doing' : status === 'done' ? 'done' : 'todo'}`;
+    card.dataset.ticket = ticket;
     card.setAttribute('data-assignee', owner);
     card.style.left = '520px';
     card.style.top = '260px';
